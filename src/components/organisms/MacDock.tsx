@@ -22,7 +22,6 @@ import {
 import DockIcon from "../atoms/dock/DockIcon";
 import ReactIcon from "../atoms/IconReact";
 import PanelConfig from "../molecules/PanelConfig";
-import MusicPlayer from "../molecules/MusicPlayer";
 
 type MacDockProps = {
   welcomeActive?: boolean;
@@ -32,7 +31,6 @@ export default function MacDock({ welcomeActive }: MacDockProps) {
   const router = useRouter();
   const { hideTaskbar, showExtendedDockDesktop, showExtendedDockMobile } = useContext(GlobalContext);
   const [isConfigActive, setIsConfigActive] = useState(false);
-  const [isMusicActive, setIsMusicActive] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [configPanel, setConfigPanel] = useState(false);
   const [clickOrigin, setClickOrigin] = useState<{ x: number; y: number } | null>(null);
@@ -42,7 +40,6 @@ export default function MacDock({ welcomeActive }: MacDockProps) {
   
   
   const panelRef = useRef<HTMLElement>(null);
-  const musicPanelRef = useRef<HTMLElement>(null);
   const dockRef = useRef<HTMLDivElement>(null);
   
   const route = getRoute(router.asPath);
@@ -68,16 +65,8 @@ export default function MacDock({ welcomeActive }: MacDockProps) {
     }
   });
 
-  useClickAway(musicPanelRef, (event) => {
-    const isDockClick = dockRef.current?.contains(event.target as Node);
-    if (!isDockClick) {
-      setIsMusicActive(false);
-    }
-  });
-
   useKey("Escape", () => {
     setIsConfigActive(false);
-    setIsMusicActive(false);
     setIsSocialPopupVisible(false);
   });
 
@@ -330,19 +319,6 @@ export default function MacDock({ welcomeActive }: MacDockProps) {
     // Execute the original click handler
     onClick();
   };
-
-  // Music icon
-  const MusicIcon = () => (
-    <svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      sx={{ opacity: 0.8 }}
-    >
-      <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55C7.79 13 6 14.79 6 17s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
-    </svg>
-  );
 
   // Custom home icon
   const HomeIcon = () => (
@@ -620,29 +596,12 @@ export default function MacDock({ welcomeActive }: MacDockProps) {
       ...desktopSocialIcons
     ]),
     
-    // Music player
-    {
-      iconName: undefined,
-      customIcon: <MusicIcon />,
-      label: "Music",
-      onClick: () => {
-        setIsMusicActive(!isMusicActive);
-        if (!isMusicActive) setIsConfigActive(false); // Close settings when opening music
-      },
-      href: undefined,
-      isActive: isMusicActive,
-      isNavigationIcon: false,
-    },
-
     // Settings (always present)
     {
       iconName: "FlatSettings" as const,
       customIcon: undefined,
       label: "Settings",
-      onClick: () => {
-        setIsConfigActive(!isConfigActive);
-        if (!isConfigActive) setIsMusicActive(false); // Close music when opening settings
-      },
+      onClick: () => setIsConfigActive(!isConfigActive),
       href: undefined,
       isActive: isConfigActive,
       isNavigationIcon: false,
@@ -709,31 +668,7 @@ export default function MacDock({ welcomeActive }: MacDockProps) {
         )}
       </AnimatePresence>
 
-      {/* Backdrop overlay for mobile music panel */}
-      <AnimatePresence>
-        {isMobile && isMusicActive && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            onClick={() => setIsMusicActive(false)}
-            sx={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: "rgba(0, 0, 0, 0.4)",
-              zIndex: 99,
-            }}
-            aria-hidden="true"
-          />
-        )}
-      </AnimatePresence>
-
       <PanelConfig isVisible={isConfigActive} ref={panelRef} />
-      <MusicPlayer isVisible={isMusicActive} ref={musicPanelRef} />
     </>
   );
 }

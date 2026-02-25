@@ -70,6 +70,21 @@ export default function useYouTubePlayer(containerId: string) {
     error: false,
   });
 
+  // Suppress cross-origin errors from YouTube iframe
+  useEffect(() => {
+    const handleError = (event: ErrorEvent) => {
+      // YouTube iframe errors are cross-origin and have no useful message
+      if (event.message === "Script error." || event.message?.includes("cross-origin")) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        return true;
+      }
+    };
+
+    window.addEventListener("error", handleError);
+    return () => window.removeEventListener("error", handleError);
+  }, []);
+
   // Load the YouTube IFrame API script
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -136,27 +151,31 @@ export default function useYouTubePlayer(containerId: string) {
           }
         },
         onStateChange: (event) => {
-          const playing = event.data === 1;
-          const buffering = event.data === 3;
-          const ended = event.data === 0;
+          try {
+            const playing = event.data === 1;
+            const buffering = event.data === 3;
+            const ended = event.data === 0;
 
-          setState((prev) => ({
-            ...prev,
-            isPlaying: playing,
-            isBuffering: buffering,
-            duration: event.target.getDuration() || prev.duration,
-          }));
+            setState((prev) => ({
+              ...prev,
+              isPlaying: playing,
+              isBuffering: buffering,
+              duration: event.target.getDuration() || prev.duration,
+            }));
 
-          // Start/stop progress tracking
-          if (playing) {
-            startProgressTracking();
-          } else {
-            stopProgressTracking();
-          }
+            // Start/stop progress tracking
+            if (playing) {
+              startProgressTracking();
+            } else {
+              stopProgressTracking();
+            }
 
-          // Emit ended event for track looping
-          if (ended) {
-            window.dispatchEvent(new CustomEvent("yt-track-ended"));
+            // Emit ended event for track looping
+            if (ended) {
+              window.dispatchEvent(new CustomEvent("yt-track-ended"));
+            }
+          } catch (e) {
+            // Silently handle YouTube iframe communication errors
           }
         },
         onError: () => {
@@ -169,10 +188,14 @@ export default function useYouTubePlayer(containerId: string) {
   const startProgressTracking = useCallback(() => {
     if (intervalRef.current) return;
     intervalRef.current = setInterval(() => {
-      if (playerRef.current) {
-        const currentTime = playerRef.current.getCurrentTime();
-        const duration = playerRef.current.getDuration();
-        setState((prev) => ({ ...prev, currentTime, duration }));
+      try {
+        if (playerRef.current) {
+          const currentTime = playerRef.current.getCurrentTime();
+          const duration = playerRef.current.getDuration();
+          setState((prev) => ({ ...prev, currentTime, duration }));
+        }
+      } catch (e) {
+        // Player may not be ready yet
       }
     }, 250);
   }, []);
@@ -185,28 +208,32 @@ export default function useYouTubePlayer(containerId: string) {
   }, []);
 
   const play = useCallback(() => {
-    playerRef.current?.playVideo();
+    try { playerRef.current?.playVideo(); } catch (e) { /* iframe not ready */ }
   }, []);
 
   const pause = useCallback(() => {
-    playerRef.current?.pauseVideo();
+    try { playerRef.current?.pauseVideo(); } catch (e) { /* iframe not ready */ }
   }, []);
 
   const loadVideo = useCallback((videoId: string) => {
     setState((prev) => ({ ...prev, error: false, currentTime: 0, duration: 0 }));
-    if (playerRef.current && state.isReady) {
-      playerRef.current.loadVideoById(videoId);
-    } else {
+    try {
+      if (playerRef.current && state.isReady) {
+        playerRef.current.loadVideoById(videoId);
+      } else {
+        pendingVideoRef.current = videoId;
+      }
+    } catch (e) {
       pendingVideoRef.current = videoId;
     }
   }, [state.isReady]);
 
   const seekTo = useCallback((seconds: number) => {
-    playerRef.current?.seekTo(seconds, true);
+    try { playerRef.current?.seekTo(seconds, true); } catch (e) { /* ignore */ }
   }, []);
 
   const setVolume = useCallback((volume: number) => {
-    playerRef.current?.setVolume(volume);
+    try { playerRef.current?.setVolume(volume); } catch (e) { /* ignore */ }
     setState((prev) => ({ ...prev, volume }));
   }, []);
 

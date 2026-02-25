@@ -11,6 +11,7 @@ import useInBreakpoint from "../../hooks/useInBreakpoint";
 import { ThemeMode } from "../../themes";
 
 import Navigation from "../molecules/Navigation";
+import MusicPlayer from "../molecules/MusicPlayer";
 import WelcomeScreen from "../molecules/WelcomeScreen";
 import Desktop from "../organisms/Desktop";
 import MacDock from "../organisms/MacDock";
@@ -109,7 +110,8 @@ export default function Layout({ children }: LayoutProps): JSX.Element {
         </AnimatePresence>
       </Desktop>
       <MacDock welcomeActive={welcomeActive} />
-      
+      <MusicPlayer hidden={welcomeActive} />
+
       {/* Welcome screen overlay */}
       {welcomeActive && isHomePage && (
         <WelcomeScreen
