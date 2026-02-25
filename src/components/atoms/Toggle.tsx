@@ -141,8 +141,9 @@ export default function Toggle({ id, label, isChecked, onChange, style }: Toggle
         sx={{ size: 0, m: 0, opacity: 0 }}
         checked={isChecked}
         onChange={handleChange}
+        aria-checked={isChecked}
       />
-      <span sx={bgStyle}>
+      <span sx={bgStyle} aria-hidden="true">
         <motion.span sx={thumbStyle} variants={variants} animate={isChecked ? "on" : "off"} />
         {isFocused && <span sx={{ ...focus, borderRadius: "4px" }} />}
       </span>

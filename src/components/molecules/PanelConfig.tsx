@@ -19,9 +19,10 @@ type PanelConfigProps = {
 
 const PanelConfig = ({ isVisible }: PanelConfigProps, ref: ForwardedRef<HTMLElement>) => {
   const { reduceMotion, hideTaskbar, background, glassAnimations, showExtendedDockDesktop, showExtendedDockMobile } = useContext(GlobalContext);
-  
+
   // Move hook calls outside conditional usage
   const isMobile = useInBreakpoint(1);
+  const taskbarHeight = useTaskbarHeight();
   const isSoftTheme = useMatchTheme(ThemeMode.Soft);
   const isClassicTheme = useMatchTheme(ThemeMode.Classic);
   const isTronTheme = useMatchTheme(ThemeMode.Tron);
@@ -35,13 +36,27 @@ const PanelConfig = ({ isVisible }: PanelConfigProps, ref: ForwardedRef<HTMLElem
     p: 4,
     bg: "primary",
     color: "textReverse",
-    position: "absolute",
-    left: 2,
-    bottom: useTaskbarHeight() + sizes[2],
-    zIndex: zIndex.taskbar,
+    zIndex: 100, // High z-index to ensure visibility above dock
 
-    // Apply Mac-style 8px border radius to all panel themes
-    borderRadius: "8px",
+    // Desktop: absolute positioning from left
+    ...(!isMobile && {
+      position: "absolute",
+      left: 2,
+      bottom: taskbarHeight + sizes[2],
+      borderRadius: "8px",
+    }),
+
+    // Mobile: bottom sheet style
+    ...(isMobile && {
+      position: "fixed",
+      left: 0,
+      right: 0,
+      bottom: 0,
+      borderRadius: "16px 16px 0 0",
+      maxHeight: "80vh",
+      overflowY: "auto",
+      paddingBottom: "env(safe-area-inset-bottom, 16px)",
+    }),
 
     ...(isSoftTheme && {
       bg: lighten("primary", 0.02),
@@ -78,19 +93,37 @@ const PanelConfig = ({ isVisible }: PanelConfigProps, ref: ForwardedRef<HTMLElem
     }),
   };
 
-  const variants: Variants = {
-    default: { x: "-105%", transitionEnd: { display: "none" } },
-    active: { x: 0, display: "block" },
+  const reduceMotionTransition = useReduceMotion();
+
+  // For mobile: just show/hide with transform
+  // For desktop: slide from left
+  const getMobileStyle = (): ThemeUICSSObject => {
+    if (!isMobile) return {};
+    return {
+      transform: isVisible ? "translateY(0)" : "translateY(100%)",
+      transition: "transform 0.3s ease-out",
+    };
+  };
+
+  // Desktop variants (slide from left)
+  const desktopVariants: Variants = {
+    hidden: { x: "-105%" },
+    visible: { x: 0 },
   };
 
   return (
     <MotionBox
       ref={ref}
-      sx={panelConfigStyle}
-      variants={variants}
-      initial="default"
-      animate={isVisible ? "active" : "default"}
-      transition={useReduceMotion()}
+      sx={{ ...panelConfigStyle, ...getMobileStyle() }}
+      {...(!isMobile && {
+        initial: "hidden",
+        animate: isVisible ? "visible" : "hidden",
+        variants: desktopVariants,
+        transition: { duration: 0.3, ease: "easeOut" },
+      })}
+      role="dialog"
+      aria-label="Settings"
+      aria-hidden={!isVisible}
     >
       <List sx={{ display: "grid", gridTemplateColumns: "auto auto", gap: 3, mb: 4 }}>
         <li>

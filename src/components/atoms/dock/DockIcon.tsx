@@ -196,6 +196,8 @@ export default function DockIcon({
         onClick={handleClick}
         href={href}
         aria-label={label}
+        aria-current={isNavigationIcon && isActive ? "page" : undefined}
+        whileTap={isMobile ? { scale: 1.1 } : { scale: 0.95 }}
       >
         {customIcon || (iconName && <Icon iconName={iconName} size={Math.floor(currentSize * 0.6)} />)}
       </MotionButton>

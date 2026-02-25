@@ -30,15 +30,17 @@ export default function ThemeButton({ theme }: ThemeButtonProps) {
   };
 
   return (
-    <MotionButton 
-      unsetStyle 
-      whileHover={{ scale: isActive ? 1 : 0.95 }} 
+    <MotionButton
+      unsetStyle
+      whileHover={{ scale: isActive ? 1 : 0.95 }}
       onClick={() => cachedTheme.set(theme)}
       sx={{ borderRadius: "6px", overflow: "hidden", position: "relative" }}
+      aria-label={`${theme} theme`}
+      aria-pressed={isActive}
     >
-      <Image src={`/images/theme-${theme}.png`} alt={`Theme ${theme}`} layout="fixed" width={140} height={84} />
+      <Image src={`/images/theme-${theme}.png`} alt={`${theme} theme preview`} layout="fixed" width={140} height={84} />
       {isActive && (
-        <motion.span sx={maskStyle} animate={{ opacity: 1 }} initial={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+        <motion.span sx={maskStyle} animate={{ opacity: 1 }} initial={{ opacity: 0 }} transition={{ duration: 0.2 }} aria-hidden="true">
           <motion.span animate={{ scale: 1 }} initial={{ scale: 0 }}>
             <ReactIcon iconName="FaCheckCircle" size={40} />
           </motion.span>

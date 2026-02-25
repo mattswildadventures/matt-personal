@@ -582,7 +582,7 @@ export default function MacDock() {
       // Individual mode: Conditional separator + individual social icons
       ...(getShowExtendedDock() && showSeparator ? [{
         iconName: undefined,
-        customIcon: <div sx={{ width: "2px", height: "32px", background: "rgba(255,255,255,0.3)", borderRadius: "1px" }} />,
+        customIcon: <div sx={{ width: "2px", height: "32px", background: "rgba(255,255,255,0.3)", borderRadius: "1px" }} aria-hidden="true" />,
         label: "Separator",
         onClick: () => {},
         href: undefined,
@@ -606,7 +606,7 @@ export default function MacDock() {
 
   return (
     <>
-      <div sx={dockStyle}>
+      <nav sx={dockStyle} aria-label="Application dock">
         <motion.div
           ref={dockRef}
           sx={dockInnerStyle}
@@ -614,6 +614,7 @@ export default function MacDock() {
           initial={{ y: 100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
+          role="menubar"
         >
           {dockIcons.map((icon, index) => (
             <DockIcon
@@ -636,9 +637,33 @@ export default function MacDock() {
             />
           ))}
         </motion.div>
-      </div>
-      
+      </nav>
+
       <SocialPopup />
+
+      {/* Backdrop overlay for mobile bottom sheet */}
+      <AnimatePresence>
+        {isMobile && isConfigActive && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => setIsConfigActive(false)}
+            sx={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "rgba(0, 0, 0, 0.4)",
+              zIndex: 99, // Just below the panel (100)
+            }}
+            aria-hidden="true"
+          />
+        )}
+      </AnimatePresence>
+
       <PanelConfig isVisible={isConfigActive} ref={panelRef} />
     </>
   );

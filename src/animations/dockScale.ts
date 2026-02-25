@@ -27,19 +27,19 @@ export const dockScaleIn: Variants = {
   initial: {
     opacity: 0,
     scale: 0.9,
-    transition: { 
-      type: "spring", 
-      stiffness: 300, 
-      damping: 30 
+    transition: {
+      type: "spring",
+      stiffness: 350,
+      damping: 20
     },
   },
   animate: {
     opacity: 1,
     scale: 1,
-    transition: { 
-      type: "spring", 
-      stiffness: 300, 
-      damping: 30
+    transition: {
+      type: "spring",
+      stiffness: 350,
+      damping: 20
     },
   },
   exit: {

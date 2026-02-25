@@ -1,12 +1,12 @@
-import { createContext, Dispatch, ReactNode, SetStateAction, useEffect, useState } from "react";
+import { createContext, Dispatch, ReactNode, SetStateAction, useCallback, useEffect, useState } from "react";
 import { useLocalStorage } from "react-use";
 import { useColorMode } from "theme-ui";
 import { ThemeMode } from "../themes";
-import { 
-  getDefaultTheme, 
-  getDefaultBackground, 
-  getDefaultReduceMotion, 
-  getDefaultHideTaskbar, 
+import {
+  getDefaultTheme,
+  getDefaultBackground,
+  getDefaultReduceMotion,
+  getDefaultHideTaskbar,
   getDefaultGlassAnimations,
   getDefaultShowExtendedDockDesktop,
   getDefaultShowExtendedDockMobile
@@ -23,6 +23,11 @@ export enum BackgroundMode {
   Random = "random",
 }
 
+// Helper to determine if a theme is dark
+const isDarkTheme = (theme: ThemeMode): boolean => {
+  return theme === ThemeMode.Tron || theme === ThemeMode.Cyberpunk;
+};
+
 type GlobalContextType = {
   theme: Context<ThemeMode>;
   reduceMotion: Context;
@@ -31,6 +36,9 @@ type GlobalContextType = {
   glassAnimations: Context;
   showExtendedDockDesktop: Context;
   showExtendedDockMobile: Context;
+  // Theme transition state
+  isThemeTransitioning: boolean;
+  themeTransitionColor: string;
 };
 
 type GlobalProviderProps = {
@@ -45,11 +53,17 @@ export const GlobalContext = createContext<GlobalContextType>({
   glassAnimations: { val: getDefaultGlassAnimations(), set: () => {} },
   showExtendedDockDesktop: { val: getDefaultShowExtendedDockDesktop(), set: () => {} },
   showExtendedDockMobile: { val: getDefaultShowExtendedDockMobile(), set: () => {} },
+  isThemeTransitioning: false,
+  themeTransitionColor: "white",
 });
 
 export const GlobalProvider = ({ children }: GlobalProviderProps): JSX.Element => {
   const [_theme, _setTheme] = useColorMode();
   const [theme, setTheme] = useState(getDefaultTheme());
+
+  // Theme transition state
+  const [isThemeTransitioning, setIsThemeTransitioning] = useState(false);
+  const [themeTransitionColor, setThemeTransitionColor] = useState("white");
 
   // need these `useState + useEffect` intermediaries to resolve
   // the problem when using localStorage with Next's Static Generation
@@ -83,10 +97,37 @@ export const GlobalProvider = ({ children }: GlobalProviderProps): JSX.Element =
   useEffect(() => setShowExtendedDockDesktop(_showExtendedDockDesktop as boolean), [_showExtendedDockDesktop]);
   useEffect(() => setShowExtendedDockMobile(_showExtendedDockMobile as boolean), [_showExtendedDockMobile]);
 
+  // Theme setter with crossfade transition
+  const setThemeWithTransition = useCallback((newTheme: ThemeMode) => {
+    // Skip transition if reduce motion is enabled or if same theme
+    if (reduceMotion || newTheme === theme) {
+      _setTheme(newTheme as any);
+      return;
+    }
+
+    // Determine transition color based on theme direction
+    // Going to dark theme = black overlay, going to light theme = white overlay
+    const transitionColor = isDarkTheme(newTheme) ? "black" : "white";
+    setThemeTransitionColor(transitionColor);
+
+    // Start transition
+    setIsThemeTransitioning(true);
+
+    // Apply theme after overlay fades in
+    setTimeout(() => {
+      _setTheme(newTheme as any);
+
+      // End transition after theme is applied
+      setTimeout(() => {
+        setIsThemeTransitioning(false);
+      }, 200);
+    }, 200);
+  }, [_setTheme, reduceMotion, theme]);
+
   const context: GlobalContextType = {
     theme: {
       val: theme,
-      set: _setTheme as Dispatch<SetStateAction<ThemeMode>>,
+      set: setThemeWithTransition as Dispatch<SetStateAction<ThemeMode>>,
     },
     reduceMotion: {
       val: reduceMotion,
@@ -112,6 +153,8 @@ export const GlobalProvider = ({ children }: GlobalProviderProps): JSX.Element =
       val: showExtendedDockMobile,
       set: _setShowExtendedDockMobile as Dispatch<SetStateAction<boolean>>,
     },
+    isThemeTransitioning,
+    themeTransitionColor,
   };
 
   return <GlobalContext.Provider value={context}>{children}</GlobalContext.Provider>;

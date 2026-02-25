@@ -8,20 +8,27 @@ import useMatchTheme from "../../hooks/useMatchTheme";
 import useTaskbarHeight from "../../hooks/useTaskbarHeight";
 import useInBreakpoint from "../../hooks/useInBreakpoint";
 import { ThemeMode } from "../../themes";
+
 import Navigation from "../molecules/Navigation";
 import Desktop from "../organisms/Desktop";
 import MacDock from "../organisms/MacDock";
+
+// Dark themes use different shimmer colors
+const isDarkTheme = (theme: ThemeMode): boolean => {
+  return theme === ThemeMode.Tron || theme === ThemeMode.Cyberpunk;
+};
 
 type LayoutProps = {
   children?: ReactNode;
 };
 
 export default function Layout({ children }: LayoutProps): JSX.Element {
-  const { background } = useContext(GlobalContext);
+  const { background, theme } = useContext(GlobalContext);
   const { imageUrl, attribution, loading, error, fetchRandomBackground, clearBackground } = useUnsplashBackground();
   const isLiquidGlassTheme = useMatchTheme(ThemeMode.LiquidGlass);
   const taskbarHeight = useTaskbarHeight();
   const isMobile = useInBreakpoint(1);
+  const useDarkShimmer = isDarkTheme(theme.val);
 
   // Fetch random background when Random mode is selected
   useEffect(() => {
@@ -42,12 +49,24 @@ export default function Layout({ children }: LayoutProps): JSX.Element {
           backgroundRepeat: "no-repeat",
         };
       case BackgroundMode.Random:
+        // Show shimmer loading state while fetching image
+        if (loading && !imageUrl) {
+          const shimmerColors = useDarkShimmer
+            ? "#1a1a2e 25%, #2d2d44 50%, #1a1a2e 75%"
+            : "#e0e0e0 25%, #f5f5f5 50%, #e0e0e0 75%";
+          return {
+            background: `linear-gradient(90deg, ${shimmerColors})`,
+            backgroundSize: "200% 100%",
+            animation: "shimmer 1.5s infinite",
+          };
+        }
         if (imageUrl) {
           return {
             backgroundImage: `url('${imageUrl}')`,
             backgroundSize: "cover",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
+            transition: "background-image 0.6s ease-in",
           };
         }
         return { background: "secondary" };

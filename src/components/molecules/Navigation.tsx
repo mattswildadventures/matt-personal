@@ -88,6 +88,7 @@ export default function Navigation() {
       variants={motionVariants}
       animate="main"
       initial="main"
+      aria-label="Page navigation"
     >
       {routes.map((route) => (
         <NavLink key={route.path} data={route} />

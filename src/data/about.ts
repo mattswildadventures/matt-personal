@@ -16,8 +16,8 @@ const about = {
     `I'm writing a research paper/book on our Mindset Architecture & Construction`,
   ],
   links: {
-    $1: ["Khang", "https://www.howtopronounce.com/khang"],
-    $2: ["biggest knowledge base", "https://fireemblem.fandom.com/"],
+    $1: ["", ""],
+    $2: ["", ""],
   },
 };
 

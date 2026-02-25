@@ -183,7 +183,10 @@ export default function NavLink({ data }: NavLinkProps) {
         animate="main"
         initial="main"
         whileHover={{ scale: 0.95 }}
-        whileTap={{ scale: 0.9 }} // Better touch feedback on mobile
+        whileTap={{ scale: 0.9 }}
+        aria-label={data.title}
+        aria-current={isActive ? "page" : undefined}
+        title={data.title}
       >
         {isActive && <motion.span layoutId="indicator" sx={indicatorStyle} transition={spring} />}
         <MotionIcon
