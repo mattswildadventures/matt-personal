@@ -226,6 +226,20 @@ export function getDefaultShowSeparator(): boolean {
   return true;
 }
 
+export function getDefaultShowWelcome(): boolean {
+  const envValue = process.env.NEXT_PUBLIC_DEFAULT_SHOW_WELCOME?.toLowerCase();
+
+  if (envValue === 'true' || envValue === '1') {
+    return true;
+  }
+  if (envValue === 'false' || envValue === '0') {
+    return false;
+  }
+
+  // Fallback to true (show welcome on first visit by default)
+  return true;
+}
+
 /**
  * Get all default settings as an object for easy access
  */
@@ -244,5 +258,6 @@ export function getAllDefaults() {
     dockGapSize: getDefaultDockGapSize(),
     socialDisplayMode: getDefaultSocialDisplayMode(),
     showSeparator: getDefaultShowSeparator(),
+    showWelcome: getDefaultShowWelcome(),
   };
 }

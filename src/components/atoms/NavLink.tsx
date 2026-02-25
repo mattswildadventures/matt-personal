@@ -1,6 +1,8 @@
 import { motion, Transition, Variants } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { ComponentType } from "react";
+import { HiUser, HiBriefcase, HiCode, HiBookOpen, HiLightningBolt, HiMap } from "react-icons/hi";
 import { ThemeUICSSObject } from "theme-ui";
 import { useBackgroundLuminance } from "../../hooks/useBackgroundLuminance";
 import useHomepage from "../../hooks/useHomepage";
@@ -13,11 +15,21 @@ import { Route } from "../../misc/routes";
 import { sizes, ThemeMode } from "../../themes";
 import { MotionIcon } from "./Icon";
 
-type NavLinkProps = {
-  data: Route;
+const routeIcons: Record<string, ComponentType<{ size?: number }>> = {
+  "/about": HiUser,
+  "/work": HiBriefcase,
+  "/skills": HiCode,
+  "/research-paper": HiBookOpen,
+  "/mindset": HiLightningBolt,
+  "/roadmap": HiMap,
 };
 
-export default function NavLink({ data }: NavLinkProps) {
+type NavLinkProps = {
+  data: Route;
+  isHighlighted?: boolean;
+};
+
+export default function NavLink({ data, isHighlighted }: NavLinkProps) {
   const isHomePage = useHomepage();
   const isLandscape = useIsLandscape();
   const isMobile = useInBreakpoint(0, isLandscape);
@@ -147,6 +159,15 @@ export default function NavLink({ data }: NavLinkProps) {
     ...(!isSoftTheme && !isClassicTheme && !isTronTheme && !isLiquidGlassTheme && !isCyberpunkTheme && {
       boxShadow: "0 2px 10px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.1)",
     }),
+
+    // Welcome screen highlight glow (overrides theme box-shadow when active)
+    ...(isHighlighted && {
+      boxShadow: (theme: any) => {
+        const c = theme.colors?.highlight || "#1abc9c";
+        return `0 0 25px 8px ${c}, 0 0 50px 16px ${c}80, 0 0 80px 24px ${c}40`;
+      },
+      transition: "box-shadow 0.4s ease, transform 0.4s ease",
+    }),
   };
 
   const indicatorStyle: ThemeUICSSObject = {
@@ -189,13 +210,27 @@ export default function NavLink({ data }: NavLinkProps) {
         title={data.title}
       >
         {isActive && <motion.span layoutId="indicator" sx={indicatorStyle} transition={spring} />}
-        <MotionIcon
-          variants={iconVariants}
-          animate="main"
-          initial="main"
-          iconName={data.icon}
-          tag="span"
-        />
+        {routeIcons[data.path] ? (
+          <motion.span
+            variants={iconVariants}
+            animate="main"
+            initial="main"
+            sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+          >
+            {(() => {
+              const IconComponent = routeIcons[data.path];
+              return <IconComponent size={sidebarSize * 0.85} />;
+            })()}
+          </motion.span>
+        ) : (
+          <MotionIcon
+            variants={iconVariants}
+            animate="main"
+            initial="main"
+            iconName={data.icon}
+            tag="span"
+          />
+        )}
         <motion.span
           variants={labelVariants}
           animate="main"

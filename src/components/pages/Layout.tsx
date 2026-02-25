@@ -1,15 +1,17 @@
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
-import { Fragment, ReactNode, useContext, useEffect } from "react";
+import { Fragment, ReactNode, useCallback, useContext, useEffect, useState } from "react";
 import { ThemeUICSSObject } from "theme-ui";
 import { GlobalContext, BackgroundMode } from "../../contexts/GlobalContext";
 import { useUnsplashBackground } from "../../hooks/useUnsplashBackground";
+import useHomepage from "../../hooks/useHomepage";
 import useMatchTheme from "../../hooks/useMatchTheme";
 import useTaskbarHeight from "../../hooks/useTaskbarHeight";
 import useInBreakpoint from "../../hooks/useInBreakpoint";
 import { ThemeMode } from "../../themes";
 
 import Navigation from "../molecules/Navigation";
+import WelcomeScreen from "../molecules/WelcomeScreen";
 import Desktop from "../organisms/Desktop";
 import MacDock from "../organisms/MacDock";
 
@@ -23,12 +25,22 @@ type LayoutProps = {
 };
 
 export default function Layout({ children }: LayoutProps): JSX.Element {
-  const { background, theme } = useContext(GlobalContext);
+  const { background, theme, showWelcome } = useContext(GlobalContext);
   const { imageUrl, attribution, loading, error, fetchRandomBackground, clearBackground } = useUnsplashBackground();
+  const isHomePage = useHomepage();
   const isLiquidGlassTheme = useMatchTheme(ThemeMode.LiquidGlass);
   const taskbarHeight = useTaskbarHeight();
   const isMobile = useInBreakpoint(1);
   const useDarkShimmer = isDarkTheme(theme.val);
+
+  // Welcome screen state
+  const [highlightedRoute, setHighlightedRoute] = useState<string | null>(null);
+  const [welcomeActive, setWelcomeActive] = useState(showWelcome.val && isHomePage);
+
+  const handleWelcomeComplete = useCallback(() => {
+    setWelcomeActive(false);
+    setHighlightedRoute(null);
+  }, []);
 
   // Fetch random background when Random mode is selected
   useEffect(() => {
@@ -91,13 +103,21 @@ export default function Layout({ children }: LayoutProps): JSX.Element {
   return (
     <main sx={containerStyle}>
       <Desktop>
-        <Navigation />
+        <Navigation highlightedRoute={highlightedRoute} />
         <AnimatePresence exitBeforeEnter>
           <Fragment key={useRouter().asPath}>{children}</Fragment>
         </AnimatePresence>
       </Desktop>
-      <MacDock />
+      <MacDock welcomeActive={welcomeActive} />
       
+      {/* Welcome screen overlay */}
+      {welcomeActive && isHomePage && (
+        <WelcomeScreen
+          onHighlight={setHighlightedRoute}
+          onComplete={handleWelcomeComplete}
+        />
+      )}
+
       {/* Unsplash attribution as required by their API terms */}
       {attribution && background.val === BackgroundMode.Random && process.env.NEXT_PUBLIC_SHOW_PHOTOGRAPHER_CREDIT === 'true' && (
         <div

@@ -9,7 +9,8 @@ import {
   getDefaultHideTaskbar,
   getDefaultGlassAnimations,
   getDefaultShowExtendedDockDesktop,
-  getDefaultShowExtendedDockMobile
+  getDefaultShowExtendedDockMobile,
+  getDefaultShowWelcome
 } from "../utils/envDefaults";
 
 type Context<T = boolean> = {
@@ -36,6 +37,7 @@ type GlobalContextType = {
   glassAnimations: Context;
   showExtendedDockDesktop: Context;
   showExtendedDockMobile: Context;
+  showWelcome: Context;
   // Theme transition state
   isThemeTransitioning: boolean;
   themeTransitionColor: string;
@@ -53,6 +55,7 @@ export const GlobalContext = createContext<GlobalContextType>({
   glassAnimations: { val: getDefaultGlassAnimations(), set: () => {} },
   showExtendedDockDesktop: { val: getDefaultShowExtendedDockDesktop(), set: () => {} },
   showExtendedDockMobile: { val: getDefaultShowExtendedDockMobile(), set: () => {} },
+  showWelcome: { val: getDefaultShowWelcome(), set: () => {} },
   isThemeTransitioning: false,
   themeTransitionColor: "white",
 });
@@ -85,6 +88,9 @@ export const GlobalProvider = ({ children }: GlobalProviderProps): JSX.Element =
   const [_showExtendedDockMobile, _setShowExtendedDockMobile] = useLocalStorage("showExtendedDockMobile", getDefaultShowExtendedDockMobile());
   const [showExtendedDockMobile, setShowExtendedDockMobile] = useState(getDefaultShowExtendedDockMobile());
 
+  const [_showWelcome, _setShowWelcome] = useLocalStorage("showWelcome", getDefaultShowWelcome());
+  const [showWelcome, setShowWelcome] = useState(getDefaultShowWelcome());
+
   useEffect(() => {
     // workaround for Theme UI's color mode being default to user preference,
     // which is light/dark, altering that to match site's default
@@ -96,6 +102,7 @@ export const GlobalProvider = ({ children }: GlobalProviderProps): JSX.Element =
   useEffect(() => setGlassAnimations(_glassAnimations as boolean), [_glassAnimations]);
   useEffect(() => setShowExtendedDockDesktop(_showExtendedDockDesktop as boolean), [_showExtendedDockDesktop]);
   useEffect(() => setShowExtendedDockMobile(_showExtendedDockMobile as boolean), [_showExtendedDockMobile]);
+  useEffect(() => setShowWelcome(_showWelcome as boolean), [_showWelcome]);
 
   // Theme setter with crossfade transition
   const setThemeWithTransition = useCallback((newTheme: ThemeMode) => {
@@ -152,6 +159,10 @@ export const GlobalProvider = ({ children }: GlobalProviderProps): JSX.Element =
     showExtendedDockMobile: {
       val: showExtendedDockMobile,
       set: _setShowExtendedDockMobile as Dispatch<SetStateAction<boolean>>,
+    },
+    showWelcome: {
+      val: showWelcome,
+      set: _setShowWelcome as Dispatch<SetStateAction<boolean>>,
     },
     isThemeTransitioning,
     themeTransitionColor,

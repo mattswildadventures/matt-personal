@@ -18,7 +18,7 @@ type PanelConfigProps = {
 };
 
 const PanelConfig = ({ isVisible }: PanelConfigProps, ref: ForwardedRef<HTMLElement>) => {
-  const { reduceMotion, hideTaskbar, background, glassAnimations, showExtendedDockDesktop, showExtendedDockMobile } = useContext(GlobalContext);
+  const { reduceMotion, hideTaskbar, background, glassAnimations, showExtendedDockDesktop, showExtendedDockMobile, showWelcome } = useContext(GlobalContext);
 
   // Move hook calls outside conditional usage
   const isMobile = useInBreakpoint(1);
@@ -192,6 +192,14 @@ const PanelConfig = ({ isVisible }: PanelConfigProps, ref: ForwardedRef<HTMLElem
           />
         </div>
       </div>
+
+      <Toggle
+        id="toggle-showWelcome"
+        label="Welcome screen"
+        isChecked={showWelcome.val}
+        onChange={() => showWelcome.set(!showWelcome.val)}
+        style={{ mb: 3 }}
+      />
 
       {isLiquidGlassTheme && (
         <Toggle

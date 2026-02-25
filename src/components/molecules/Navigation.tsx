@@ -10,7 +10,11 @@ import { translate } from "../../misc/utils";
 import { MotionNav } from "../atoms/Container";
 import NavLink from "../atoms/NavLink";
 
-export default function Navigation() {
+type NavigationProps = {
+  highlightedRoute?: string | null;
+};
+
+export default function Navigation({ highlightedRoute }: NavigationProps) {
   const isHomePage = useHomepage();
   const isMobile = useInBreakpoint(0);
   const mainTransition = useReduceMotion({ duration: 0.8 });
@@ -91,7 +95,7 @@ export default function Navigation() {
       aria-label="Page navigation"
     >
       {routes.map((route) => (
-        <NavLink key={route.path} data={route} />
+        <NavLink key={route.path} data={route} isHighlighted={route.path === highlightedRoute} />
       ))}
     </MotionNav>
   );

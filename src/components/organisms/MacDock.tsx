@@ -23,7 +23,11 @@ import DockIcon from "../atoms/dock/DockIcon";
 import ReactIcon from "../atoms/IconReact";
 import PanelConfig from "../molecules/PanelConfig";
 
-export default function MacDock() {
+type MacDockProps = {
+  welcomeActive?: boolean;
+};
+
+export default function MacDock({ welcomeActive }: MacDockProps) {
   const router = useRouter();
   const { hideTaskbar, showExtendedDockDesktop, showExtendedDockMobile } = useContext(GlobalContext);
   const [isConfigActive, setIsConfigActive] = useState(false);
@@ -612,8 +616,8 @@ export default function MacDock() {
           sx={dockInnerStyle}
           onMouseLeave={handleMouseLeave}
           initial={{ y: 100, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
+          animate={{ y: welcomeActive ? 100 : 0, opacity: welcomeActive ? 0 : 1 }}
+          transition={{ duration: 0.5, ease: "easeOut", delay: welcomeActive ? 0 : 0.1 }}
           role="menubar"
         >
           {dockIcons.map((icon, index) => (
