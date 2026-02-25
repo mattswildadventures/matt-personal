@@ -18,7 +18,7 @@ type PanelConfigProps = {
 };
 
 const PanelConfig = ({ isVisible }: PanelConfigProps, ref: ForwardedRef<HTMLElement>) => {
-  const { reduceMotion, hideTaskbar, background, glassAnimations, showExtendedDockDesktop, showExtendedDockMobile, showWelcome } = useContext(GlobalContext);
+  const { reduceMotion, hideTaskbar, background, glassAnimations, showExtendedDockDesktop, showExtendedDockMobile, showWelcome, dockMagnification } = useContext(GlobalContext);
 
   // Move hook calls outside conditional usage
   const isMobile = useInBreakpoint(1);
@@ -166,6 +166,15 @@ const PanelConfig = ({ isVisible }: PanelConfigProps, ref: ForwardedRef<HTMLElem
         onChange={() => currentShowExtendedDock.set(!currentShowExtendedDock.val)}
         style={{ mb: 3 }}
       />
+      {!isMobile && (
+        <Toggle
+          id="toggle-dockMagnification"
+          label="Dock magnification"
+          isChecked={dockMagnification.val}
+          onChange={() => dockMagnification.set(!dockMagnification.val)}
+          style={{ mb: 3 }}
+        />
+      )}
       
       <div sx={{ mb: 3 }}>
         <span sx={{ fontSize: 1, fontWeight: "bold", mb: 2, display: "block" }}>

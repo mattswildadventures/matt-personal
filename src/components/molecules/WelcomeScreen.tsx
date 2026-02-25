@@ -15,27 +15,27 @@ type WelcomeScreenProps = {
 
 const snippets = [
   {
-    text: "From tennis coaching to founding Minnio — 14 years of building, learning, and starting over.",
+    text: "14 years from tennis coaching to founding Minnio. The full timeline lives in Work.",
     route: "/work",
   },
   {
-    text: "Mapping how our mindset is built through patterns, language, and lived experience.",
+    text: "Writing a research paper that maps the architecture and construction of our mindset, exploring how patterns, language, and experience shape the way we think.",
     route: "/research-paper",
   },
   {
-    text: "Antifragile mindset. First principles. Systems thinking. The mental models behind the work.",
+    text: "Antifragile thinking. First principles. Systems thinking. The mental models behind the work, collected in Mindset.",
     route: "/mindset",
   },
   {
-    text: "40+ technologies — from HTML to knowledge graphs, AI, and the Model Context Protocol.",
+    text: "40+ technologies, from HTML to knowledge graphs, AI, and MCP. Browse them in Skills.",
     route: "/skills",
   },
   {
-    text: "Adventurer. OCR athlete. Represented Australia. Backpacked 23 countries.",
+    text: "Adventurer. OCR athlete. Represented Australia. Backpacked 23 countries. More in About.",
     route: "/about",
   },
   {
-    text: "Where I've been, where I'm heading, and what I'm building next.",
+    text: "Where I've been, where I'm heading, and what I'm building next. Mapped out in Roadmap.",
     route: "/roadmap",
   },
 ];
@@ -288,7 +288,7 @@ export default function WelcomeScreen({ onHighlight, onComplete }: WelcomeScreen
           transition={{ duration: 0.7, ease: "easeOut" }}
           sx={greetingStyle}
         >
-          Hey, I'm Matt.
+          Hey, I&apos;m Matt.
         </motion.h1>
 
         {/* Snippets with sliding focus indicator */}

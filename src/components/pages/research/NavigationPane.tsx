@@ -1,5 +1,5 @@
 import React from "react";
-import research from "../../../data/research";
+import researchInsights from "../../../data/researchInsights";
 import { List } from "../../atoms/Container";
 import NavigationPaneItem from "../../atoms/NavigationPaneItem";
 import { H3 } from "../../atoms/Typography";
@@ -20,17 +20,17 @@ export default function NavigationPane({ title, onNavigate }: NavigationPaneProp
 
   return (
     <div sx={{ minWidth: 200 }}>
-      {Object.keys(research).map((category, i) => (
+      {Object.keys(researchInsights).map((category, i) => (
         <React.Fragment key={i}>
           <H3>{category}</H3>
           <List sx={{ mb: 5, display: ["grid", null, "block"], gridTemplateColumns: "1fr 1fr 1fr" }}>
-            {research[category].map((paper, j) => (
+            {researchInsights[category].map((insight, j) => (
               <NavigationPaneItem
                 key={j}
                 icon={["FcFile", "FcOpenedFolder"]} // Use file icons from React Icons (Flat Color)
-                text={paper.title}
-                isActive={title === paper.title}
-                onClick={() => onNavigate(paper.title)}
+                text={insight.title}
+                isActive={title === insight.title}
+                onClick={() => onNavigate(insight.title)}
               />
             ))}
           </List>

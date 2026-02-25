@@ -48,9 +48,11 @@ export default function DockIcon({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    transition: "transform 0.2s ease-out",
-    willChange: "transform",
-    transform: "translate3d(0, 0, 0)", // Force hardware acceleration
+    justifyContent: "flex-end", // Anchor icon to bottom so it extends upward
+    height: baseSize, // Fixed height — prevents dock bar from expanding
+    overflow: "visible", // Allow magnified icon to extend past the wrapper
+    transition: "width 0.2s ease-out",
+    willChange: "width",
   };
 
   const iconStyle: ThemeUICSSObject = {
@@ -60,24 +62,28 @@ export default function DockIcon({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    background: "rgba(255, 255, 255, 0.1)",
+    bg: "dockIconBg",
+    color: "dockIconColor",
     backdropFilter: "blur(10px)",
-    border: "1px solid rgba(255, 255, 255, 0.2)",
+    border: "1px solid",
+    borderColor: "dockIconBorder",
     cursor: "pointer",
     transition: "all 0.2s ease-out",
     willChange: "transform, background",
     transform: "translate3d(0, 0, 0)", // Force hardware acceleration
-    
+    transformOrigin: "bottom center", // Scale from bottom for whileTap
+
     // Enhanced touch target for mobile
     minWidth: isMobile ? "44px" : "auto", // Minimum 44px touch target
     minHeight: isMobile ? "44px" : "auto",
-    
+
     "&:hover": {
-      background: "rgba(255, 255, 255, 0.2)",
+      bg: "dockIconHoverBg",
       transform: isMobile ? "scale(1.05)" : "translateY(-2px)", // Different hover for mobile
     },
 
     "&:active": {
+      bg: "dockIconActiveBg",
       transform: "translateY(0px) scale(0.95)",
       transition: "all 0.1s ease-out", // Faster feedback on touch
     },
@@ -85,31 +91,27 @@ export default function DockIcon({
     // Touch-specific styles
     "@media (hover: none) and (pointer: coarse)": {
       "&:hover": {
-        background: "rgba(255, 255, 255, 0.1)", // Reset hover for touch devices
+        bg: "dockIconBg", // Reset hover for touch devices
         transform: "none",
       },
       "&:active": {
-        background: "rgba(255, 255, 255, 0.3)",
+        bg: "dockIconActiveBg",
         transform: "scale(0.9)",
       },
     },
 
-    // Cyberpunk theme styling
+    // Cyberpunk theme glow effects
     ...(isCyberpunkTheme && {
-      background: "rgba(51, 0, 102, 0.8)",
-      border: "1px solid",
-      borderColor: "highlight",
-      boxShadow: "0 0 15px rgba(255, 0, 128, 0.5), 0 0 30px rgba(0, 255, 255, 0.3), inset 0 0 15px rgba(255, 0, 128, 0.1)",
-      color: "highlight",
-      
+      boxShadow: (theme: any) => `0 0 15px ${theme.colors?.dockGlow}, 0 0 30px ${theme.colors?.dockShadow}, inset 0 0 15px ${theme.colors?.dockGlow}`,
+
       "&:hover": {
-        background: "rgba(51, 0, 102, 0.9)",
-        boxShadow: "0 0 20px rgba(255, 0, 128, 0.7), 0 0 40px rgba(0, 255, 255, 0.5), inset 0 0 20px rgba(255, 0, 128, 0.2)",
+        bg: "dockIconHoverBg",
+        boxShadow: (theme: any) => `0 0 20px ${theme.colors?.dockGlow}, 0 0 40px ${theme.colors?.dockShadow}, inset 0 0 20px ${theme.colors?.dockGlow}`,
         transform: isMobile ? "scale(1.05)" : "translateY(-2px)",
       },
-      
+
       "&:active": {
-        background: "rgba(51, 0, 102, 0.7)",
+        bg: "dockIconActiveBg",
         transform: "translateY(0px) scale(0.95)",
       },
     }),
@@ -187,7 +189,6 @@ export default function DockIcon({
       onMouseLeave={onMouseLeave}
       variants={bounceVariants}
       initial="initial"
-      style={{ transform: `scale(${scale})` }}
     >
       <MotionButton
         ref={buttonRef}
@@ -208,10 +209,10 @@ export default function DockIcon({
       {/* CSS keyframes for bounce animation */}
       <style jsx>{`
         @keyframes dockIconBounce {
-          0% { transform: scale(${scale}) translateY(0px); }
-          30% { transform: scale(${scale}) translateY(-8px); }
-          70% { transform: scale(${scale}) translateY(-2px); }
-          100% { transform: scale(${scale}) translateY(0px); }
+          0% { transform: translateY(0px); }
+          30% { transform: translateY(-8px); }
+          70% { transform: translateY(-2px); }
+          100% { transform: translateY(0px); }
         }
       `}</style>
     </motion.div>

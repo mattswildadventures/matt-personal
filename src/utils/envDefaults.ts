@@ -20,8 +20,8 @@ export function getDefaultTheme(): ThemeMode {
     case 'liquidglass':
       return ThemeMode.LiquidGlass;
     default:
-      // Fallback to Flat theme if invalid or missing
-      return ThemeMode.Flat;
+      // Fallback to LiquidGlass theme if invalid or missing
+      return ThemeMode.LiquidGlass;
   }
 }
 
@@ -36,8 +36,8 @@ export function getDefaultBackground(): BackgroundMode {
     case 'random':
       return BackgroundMode.Random;
     default:
-      // Fallback to Custom (My background) if invalid or missing
-      return BackgroundMode.Custom;
+      // Fallback to Random nature if invalid or missing
+      return BackgroundMode.Random;
   }
 }
 
@@ -226,6 +226,20 @@ export function getDefaultShowSeparator(): boolean {
   return true;
 }
 
+export function getDefaultDockMagnification(): boolean {
+  const envValue = process.env.NEXT_PUBLIC_DEFAULT_DOCK_MAGNIFICATION?.toLowerCase();
+
+  if (envValue === 'true' || envValue === '1') {
+    return true;
+  }
+  if (envValue === 'false' || envValue === '0') {
+    return false;
+  }
+
+  // Fallback to true (dock magnification enabled by default)
+  return true;
+}
+
 export function getDefaultShowWelcome(): boolean {
   const envValue = process.env.NEXT_PUBLIC_DEFAULT_SHOW_WELCOME?.toLowerCase();
 
@@ -259,5 +273,6 @@ export function getAllDefaults() {
     socialDisplayMode: getDefaultSocialDisplayMode(),
     showSeparator: getDefaultShowSeparator(),
     showWelcome: getDefaultShowWelcome(),
+    dockMagnification: getDefaultDockMagnification(),
   };
 }

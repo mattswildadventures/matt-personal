@@ -16,8 +16,8 @@ export default function ResearchPaper(): JSX.Element {
 
   return (
     <Window title={getRoute(asPath)?.title + ' - Mindset Architecture & Construction'}>
-      <Flex sx={{ 
-        height: "100%", 
+      <Flex sx={{
+        height: "100%",
         flexDirection: isMobile ? "column" : "row"
       }}>
         <NavigationPane title={activeItem} onNavigate={(item) => setActiveItem(item)} />

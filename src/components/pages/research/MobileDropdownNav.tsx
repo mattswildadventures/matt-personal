@@ -4,7 +4,7 @@ import { Box, Button, Text } from "theme-ui";
 import { GlobalContext } from "../../../contexts/GlobalContext";
 import { ThemeMode } from "../../../themes";
 import useReduceMotion from "../../../hooks/useReduceMotion";
-import research from "../../../data/research";
+import research from "../../../data/researchInsights";
 
 type MobileDropdownNavProps = {
   title?: string;

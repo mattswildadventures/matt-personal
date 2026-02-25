@@ -28,6 +28,17 @@ const theme: Theme = {
     red: "#ed4c5a",
     green: "#00c851",
 
+    // Dock tokens
+    dockBg: "rgba(44, 62, 80, 0.2)",
+    dockBorder: "rgba(44, 62, 80, 0.3)",
+    dockShadow: "rgba(0, 0, 0, 0.3)",
+    dockGlow: "transparent",
+    dockIconBg: "rgba(44, 62, 80, 0.15)",
+    dockIconBorder: "rgba(44, 62, 80, 0.25)",
+    dockIconHoverBg: "rgba(44, 62, 80, 0.3)",
+    dockIconActiveBg: "rgba(44, 62, 80, 0.4)",
+    dockIconColor: "#fff",
+
     modes: {
       soft: {
         background: "#f1f1f8",
@@ -42,6 +53,15 @@ const theme: Theme = {
         white: "#e2e3f0",
         red: "#ed4c5a",
         green: "#00c851",
+        dockBg: "rgba(226, 227, 240, 0.25)",
+        dockBorder: "rgba(147, 161, 210, 0.3)",
+        dockShadow: "rgba(0, 0, 0, 0.2)",
+        dockGlow: "transparent",
+        dockIconBg: "rgba(226, 227, 240, 0.2)",
+        dockIconBorder: "rgba(147, 161, 210, 0.25)",
+        dockIconHoverBg: "rgba(226, 227, 240, 0.35)",
+        dockIconActiveBg: "rgba(226, 227, 240, 0.45)",
+        dockIconColor: "#232246",
       },
 
       classic: {
@@ -57,6 +77,15 @@ const theme: Theme = {
         white: "#fff",
         red: "#f8c3c5",
         green: "#cbe7c5",
+        dockBg: "rgba(243, 235, 217, 0.25)",
+        dockBorder: "rgba(0, 0, 0, 0.15)",
+        dockShadow: "rgba(0, 0, 0, 0.4)",
+        dockGlow: "transparent",
+        dockIconBg: "rgba(243, 235, 217, 0.2)",
+        dockIconBorder: "rgba(0, 0, 0, 0.12)",
+        dockIconHoverBg: "rgba(243, 235, 217, 0.35)",
+        dockIconActiveBg: "rgba(243, 235, 217, 0.45)",
+        dockIconColor: "#000",
       },
 
       tron: {
@@ -72,6 +101,15 @@ const theme: Theme = {
         white: "#fff",
         red: "#166775",
         green: "#0b363d",
+        dockBg: "rgba(4, 50, 54, 0.3)",
+        dockBorder: "rgba(40, 142, 159, 0.4)",
+        dockShadow: "rgba(40, 142, 159, 0.4)",
+        dockGlow: "transparent",
+        dockIconBg: "rgba(4, 50, 54, 0.3)",
+        dockIconBorder: "rgba(40, 142, 159, 0.3)",
+        dockIconHoverBg: "rgba(4, 50, 54, 0.5)",
+        dockIconActiveBg: "rgba(4, 50, 54, 0.6)",
+        dockIconColor: "#adeaeb",
       },
 
       liquidglass: {
@@ -87,6 +125,15 @@ const theme: Theme = {
         white: "rgba(255, 255, 255, 0.9)",
         red: "rgba(239, 68, 68, 0.8)",
         green: "rgba(16, 185, 129, 0.8)",
+        dockBg: "rgba(255, 255, 255, 0.12)",
+        dockBorder: "rgba(255, 255, 255, 0.25)",
+        dockShadow: "rgba(0, 0, 0, 0.2)",
+        dockGlow: "transparent",
+        dockIconBg: "rgba(255, 255, 255, 0.1)",
+        dockIconBorder: "rgba(255, 255, 255, 0.2)",
+        dockIconHoverBg: "rgba(255, 255, 255, 0.2)",
+        dockIconActiveBg: "rgba(255, 255, 255, 0.3)",
+        dockIconColor: "rgba(255, 255, 255, 0.9)",
       },
 
       cyberpunk: {
@@ -102,6 +149,15 @@ const theme: Theme = {
         white: "#ffffff",
         red: "#ff0080",
         green: "#00ff41",
+        dockBg: "rgba(26, 0, 51, 0.8)",
+        dockBorder: "#00ffff",
+        dockShadow: "rgba(0, 255, 255, 0.4)",
+        dockGlow: "rgba(255, 0, 128, 0.6)",
+        dockIconBg: "rgba(51, 0, 102, 0.8)",
+        dockIconBorder: "#00ffff",
+        dockIconHoverBg: "rgba(51, 0, 102, 0.9)",
+        dockIconActiveBg: "rgba(51, 0, 102, 0.7)",
+        dockIconColor: "#00ffff",
       },
     },
   },

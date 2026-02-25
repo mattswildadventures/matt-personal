@@ -29,7 +29,7 @@ type MacDockProps = {
 
 export default function MacDock({ welcomeActive }: MacDockProps) {
   const router = useRouter();
-  const { hideTaskbar, showExtendedDockDesktop, showExtendedDockMobile } = useContext(GlobalContext);
+  const { hideTaskbar, showExtendedDockDesktop, showExtendedDockMobile, dockMagnification } = useContext(GlobalContext);
   const [isConfigActive, setIsConfigActive] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [configPanel, setConfigPanel] = useState(false);
@@ -52,9 +52,7 @@ export default function MacDock({ welcomeActive }: MacDockProps) {
   const dockGapSize = getDefaultDockGapSize();
 
   // Move hook calls outside conditional usage
-  const isSoftTheme = useMatchTheme(ThemeMode.Soft);
-  const isClassicTheme = useMatchTheme(ThemeMode.Classic);
-  const isTronTheme = useMatchTheme(ThemeMode.Tron);
+  const isLiquidGlassTheme = useMatchTheme(ThemeMode.LiquidGlass);
   const isCyberpunkTheme = useMatchTheme(ThemeMode.Cyberpunk);
 
   useClickAway(panelRef, (event) => {
@@ -70,10 +68,10 @@ export default function MacDock({ welcomeActive }: MacDockProps) {
     setIsSocialPopupVisible(false);
   });
 
-  // Calculate magnification based on hover (disabled on mobile)
+  // Calculate magnification based on hover (disabled on mobile or when magnification is off)
   const getMagnification = (index: number): number => {
-    if (isMobile || hoveredIndex === null) return 1;
-    
+    if (isMobile || !dockMagnification.val || hoveredIndex === null) return 1;
+
     const distance = Math.abs(index - hoveredIndex);
     if (distance === 0) return 1.33; // Primary hover: 64px (48px * 1.33)
     if (distance === 1) return 1.17; // Adjacent: 56px (48px * 1.17)
@@ -226,39 +224,20 @@ export default function MacDock({ welcomeActive }: MacDockProps) {
     borderRadius: "20px",
     willChange: "transform",
     transform: "translate3d(0, 0, 0)", // Hardware acceleration
-    
-    // Base glassmorphism styling
-    background: "rgba(255, 255, 255, 0.15)",
-    backdropFilter: "blur(20px)",
-    border: "1px solid rgba(255, 255, 255, 0.2)",
-    boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
+    overflow: "visible", // Allow magnified icons to extend past the dock bar
 
-    // Theme-specific adjustments
-    ...(isSoftTheme && {
-      background: "rgba(255, 255, 255, 0.2)",
-      border: "1px solid rgba(255, 255, 255, 0.3)",
-      boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
-    }),
-
-    ...(isClassicTheme && {
-      background: "rgba(248, 243, 231, 0.2)",
-      border: "1px solid rgba(0, 0, 0, 0.2)",
-      boxShadow: "0 8px 32px rgba(0, 0, 0, 0.4)",
-    }),
-
-    ...(isTronTheme && {
-      background: "rgba(40, 142, 159, 0.15)",
-      border: "1px solid rgba(40, 142, 159, 0.3)",
-      boxShadow: "0 8px 32px rgba(40, 142, 159, 0.4)",
-    }),
-
-    ...(isCyberpunkTheme && {
-      background: "rgba(26, 0, 51, 0.8)",
-      border: "1px solid",
-      borderColor: "highlight",
-      boxShadow: "0 0 20px rgba(255, 0, 128, 0.6), 0 0 40px rgba(0, 255, 255, 0.4), inset 0 0 20px rgba(255, 0, 128, 0.1)",
-      backdropFilter: "blur(20px) saturate(1.2)",
-    }),
+    // Theme-adaptive glassmorphism via dock tokens
+    bg: "dockBg",
+    backdropFilter: isCyberpunkTheme
+      ? "blur(20px) saturate(1.2)"
+      : isLiquidGlassTheme
+        ? "blur(20px) saturate(1.8) brightness(1.1)"
+        : "blur(20px)",
+    border: "1px solid",
+    borderColor: "dockBorder",
+    boxShadow: isCyberpunkTheme
+      ? (theme: any) => `0 0 20px ${theme.colors?.dockGlow}, 0 0 40px ${theme.colors?.dockShadow}, inset 0 0 20px ${theme.colors?.dockGlow}`
+      : (theme: any) => `0 8px 32px ${theme.colors?.dockShadow}`,
 
     // Mobile taskbar styling - full width, no rounded corners
     ...(isMobile && {
@@ -268,15 +247,12 @@ export default function MacDock({ welcomeActive }: MacDockProps) {
       gap: `${gapSize}px`,
       justifyContent: needsScrolling ? "flex-start" : getDockJustification(), // Use configured spacing
       border: isCyberpunkTheme ? "1px solid" : "none",
-      borderColor: isCyberpunkTheme ? "highlight" : undefined,
-      borderTop: isCyberpunkTheme ? "1px solid" : "1px solid rgba(255, 255, 255, 0.2)",
-      borderTopColor: isCyberpunkTheme ? "highlight" : undefined,
-      boxShadow: isCyberpunkTheme 
-        ? "0 0 20px rgba(255, 0, 128, 0.6), 0 0 40px rgba(0, 255, 255, 0.4), inset 0 0 20px rgba(255, 0, 128, 0.1)"
-        : "0 -4px 20px rgba(0, 0, 0, 0.3)",
-      ...(isCyberpunkTheme && {
-        background: "rgba(26, 0, 51, 0.9)",
-      }),
+      borderColor: isCyberpunkTheme ? "dockBorder" : undefined,
+      borderTop: "1px solid",
+      borderTopColor: "dockBorder",
+      boxShadow: isCyberpunkTheme
+        ? (theme: any) => `0 0 20px ${theme.colors?.dockGlow}, 0 0 40px ${theme.colors?.dockShadow}, inset 0 0 20px ${theme.colors?.dockGlow}`
+        : (theme: any) => `0 -4px 20px ${theme.colors?.dockShadow}`,
       minHeight: `${taskbarHeight}px`,
       height: `${taskbarHeight}px`,
       // Add horizontal scrolling when needed
@@ -386,37 +362,18 @@ export default function MacDock({ welcomeActive }: MacDockProps) {
               gap: "8px",
               padding: "12px",
               borderRadius: "16px",
-              background: "rgba(255, 255, 255, 0.15)",
-              backdropFilter: "blur(20px)",
-              border: "1px solid rgba(255, 255, 255, 0.2)",
-              boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
+              bg: "dockBg",
+              backdropFilter: isCyberpunkTheme
+                ? "blur(20px) saturate(1.2)"
+                : isLiquidGlassTheme
+                  ? "blur(20px) saturate(1.8) brightness(1.1)"
+                  : "blur(20px)",
+              border: "1px solid",
+              borderColor: "dockBorder",
+              boxShadow: isCyberpunkTheme
+                ? (theme: any) => `0 0 20px ${theme.colors?.dockGlow}, 0 0 40px ${theme.colors?.dockShadow}, inset 0 0 20px ${theme.colors?.dockGlow}`
+                : (theme: any) => `0 8px 32px ${theme.colors?.dockShadow}`,
               zIndex: zIndex.taskbar,
-              
-              // Theme-specific adjustments
-              ...(isSoftTheme && {
-                background: "rgba(255, 255, 255, 0.2)",
-                border: "1px solid rgba(255, 255, 255, 0.3)",
-                boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
-              }),
-
-              ...(isClassicTheme && {
-                background: "rgba(248, 243, 231, 0.2)",
-                border: "1px solid rgba(0, 0, 0, 0.2)",
-                boxShadow: "0 8px 32px rgba(0, 0, 0, 0.4)",
-              }),
-
-              ...(isTronTheme && {
-                background: "rgba(40, 142, 159, 0.15)",
-                border: "1px solid rgba(40, 142, 159, 0.3)",
-                boxShadow: "0 8px 32px rgba(40, 142, 159, 0.4)",
-              }),
-
-              ...(isCyberpunkTheme && {
-                background: "rgba(26, 0, 51, 0.8)",
-                border: "1px solid",
-                borderColor: "highlight",
-                boxShadow: "0 0 20px rgba(255, 0, 128, 0.6), 0 0 40px rgba(0, 255, 255, 0.4), inset 0 0 20px rgba(255, 0, 128, 0.1)",
-              }),
             }}
           >
             {desktopSocialIcons.map((icon, index) => (
@@ -586,7 +543,7 @@ export default function MacDock({ welcomeActive }: MacDockProps) {
       // Individual mode: Conditional separator + individual social icons
       ...(getShowExtendedDock() && showSeparator ? [{
         iconName: undefined,
-        customIcon: <div sx={{ width: "2px", height: "32px", background: "rgba(255,255,255,0.3)", borderRadius: "1px" }} aria-hidden="true" />,
+        customIcon: <div sx={{ width: "2px", height: "32px", bg: "dockBorder", borderRadius: "1px" }} aria-hidden="true" />,
         label: "Separator",
         onClick: () => {},
         href: undefined,

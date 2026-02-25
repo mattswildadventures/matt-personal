@@ -10,7 +10,8 @@ import {
   getDefaultGlassAnimations,
   getDefaultShowExtendedDockDesktop,
   getDefaultShowExtendedDockMobile,
-  getDefaultShowWelcome
+  getDefaultShowWelcome,
+  getDefaultDockMagnification
 } from "../utils/envDefaults";
 
 type Context<T = boolean> = {
@@ -38,6 +39,7 @@ type GlobalContextType = {
   showExtendedDockDesktop: Context;
   showExtendedDockMobile: Context;
   showWelcome: Context;
+  dockMagnification: Context;
   // Theme transition state
   isThemeTransitioning: boolean;
   themeTransitionColor: string;
@@ -56,6 +58,7 @@ export const GlobalContext = createContext<GlobalContextType>({
   showExtendedDockDesktop: { val: getDefaultShowExtendedDockDesktop(), set: () => {} },
   showExtendedDockMobile: { val: getDefaultShowExtendedDockMobile(), set: () => {} },
   showWelcome: { val: getDefaultShowWelcome(), set: () => {} },
+  dockMagnification: { val: getDefaultDockMagnification(), set: () => {} },
   isThemeTransitioning: false,
   themeTransitionColor: "white",
 });
@@ -91,6 +94,9 @@ export const GlobalProvider = ({ children }: GlobalProviderProps): JSX.Element =
   const [_showWelcome, _setShowWelcome] = useLocalStorage("showWelcome", getDefaultShowWelcome());
   const [showWelcome, setShowWelcome] = useState(getDefaultShowWelcome());
 
+  const [_dockMagnification, _setDockMagnification] = useLocalStorage("dockMagnification", getDefaultDockMagnification());
+  const [dockMagnification, setDockMagnification] = useState(getDefaultDockMagnification());
+
   useEffect(() => {
     // workaround for Theme UI's color mode being default to user preference,
     // which is light/dark, altering that to match site's default
@@ -103,6 +109,7 @@ export const GlobalProvider = ({ children }: GlobalProviderProps): JSX.Element =
   useEffect(() => setShowExtendedDockDesktop(_showExtendedDockDesktop as boolean), [_showExtendedDockDesktop]);
   useEffect(() => setShowExtendedDockMobile(_showExtendedDockMobile as boolean), [_showExtendedDockMobile]);
   useEffect(() => setShowWelcome(_showWelcome as boolean), [_showWelcome]);
+  useEffect(() => setDockMagnification(_dockMagnification as boolean), [_dockMagnification]);
 
   // Theme setter with crossfade transition
   const setThemeWithTransition = useCallback((newTheme: ThemeMode) => {
@@ -163,6 +170,10 @@ export const GlobalProvider = ({ children }: GlobalProviderProps): JSX.Element =
     showWelcome: {
       val: showWelcome,
       set: _setShowWelcome as Dispatch<SetStateAction<boolean>>,
+    },
+    dockMagnification: {
+      val: dockMagnification,
+      set: _setDockMagnification as Dispatch<SetStateAction<boolean>>,
     },
     isThemeTransitioning,
     themeTransitionColor,
