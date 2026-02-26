@@ -83,9 +83,10 @@ export default function MacDock({ welcomeActive, isMusicExpanded, isMusicPlaying
   };
 
   // Get the appropriate extended dock setting based on current platform
+  // Mobile never shows extended dock — navigation is handled by the welcome screen cards
   const getShowExtendedDock = useCallback((): boolean => {
-    return isMobile ? showExtendedDockMobile.val : showExtendedDockDesktop.val;
-  }, [isMobile, showExtendedDockMobile.val, showExtendedDockDesktop.val]);
+    return isMobile ? false : showExtendedDockDesktop.val;
+  }, [isMobile, showExtendedDockDesktop.val]);
 
   // Social display configuration from environment (pass extended dock state for smart fallback)
   const socialDisplayMode = getDefaultSocialDisplayMode(getShowExtendedDock());

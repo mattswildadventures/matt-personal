@@ -153,13 +153,15 @@ const PanelConfig = ({ isVisible }: PanelConfigProps, ref: ForwardedRef<HTMLElem
         onChange={() => hideTaskbar.set(!hideTaskbar.val)}
         style={{ mb: 3 }}
       />
-      <Toggle
-        id="toggle-showExtendedDock"
-        label={`Show extended dock (${isMobile ? 'Mobile' : 'Desktop'})`}
-        isChecked={currentShowExtendedDock.val}
-        onChange={() => currentShowExtendedDock.set(!currentShowExtendedDock.val)}
-        style={{ mb: 3 }}
-      />
+      {!isMobile && (
+        <Toggle
+          id="toggle-showExtendedDock"
+          label="Show extended dock"
+          isChecked={currentShowExtendedDock.val}
+          onChange={() => currentShowExtendedDock.set(!currentShowExtendedDock.val)}
+          style={{ mb: 3 }}
+        />
+      )}
       {!isMobile && (
         <Toggle
           id="toggle-dockMagnification"
