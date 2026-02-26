@@ -64,7 +64,6 @@ export default function DockIcon({
     justifyContent: "center",
     bg: "dockIconBg",
     color: "dockIconColor",
-    backdropFilter: "blur(10px)",
     border: "1px solid",
     borderColor: "dockIconBorder",
     cursor: "pointer",
