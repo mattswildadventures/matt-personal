@@ -82,8 +82,8 @@ export function getDefaultGlassAnimations(): boolean {
     return false;
   }
   
-  // Fallback to true if invalid or missing (glass animations enabled by default)
-  return true;
+  // Fallback to false if invalid or missing (glass animations disabled by default)
+  return false;
 }
 
 export function getDefaultShowExtendedDockDesktop(): boolean {
