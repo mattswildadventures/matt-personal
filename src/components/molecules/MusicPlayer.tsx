@@ -180,25 +180,355 @@ export default function MusicPlayer({ hidden }: MusicPlayerProps) {
 
   const hasAnyTracks = categories.length > 0;
   const [isHovered, setIsHovered] = useState(false);
+  const [isMobileExpanded, setIsMobileExpanded] = useState(false);
 
-  // Don't render at all on mobile for now (rail doesn't suit mobile)
-  if (isMobile) return null;
+  const mobilePlayerRef = useRef<HTMLDivElement>(null);
 
+  useClickAway(mobilePlayerRef, () => {
+    if (isMobileExpanded) setIsMobileExpanded(false);
+  }, ["mousedown", "touchstart"]);
+
+  // --- Hidden YouTube player (always rendered to prevent removeChild errors) ---
+  const youtubeContainer = (
+    <div
+      id={YOUTUBE_CONTAINER_ID}
+      sx={{
+        position: "fixed",
+        top: "-9999px",
+        left: "-9999px",
+        width: "1px",
+        height: "1px",
+        opacity: 0,
+        pointerEvents: "none",
+      }}
+    />
+  );
+
+  // --- Mobile music player ---
+  if (isMobile) {
+    return (
+      <>
+        {youtubeContainer}
+
+        {/* Mobile music button + expanded panel */}
+        <div
+          ref={mobilePlayerRef}
+          sx={{
+            position: "fixed",
+            top: "12px",
+            right: "12px",
+            zIndex: 100,
+          }}
+        >
+          {/* Floating music button */}
+          <motion.button
+            initial={{ y: -60, opacity: 0 }}
+            animate={{
+              y: hidden ? -60 : 0,
+              opacity: hidden ? 0 : 1,
+            }}
+            transition={{ duration: 0.4, ease: "easeOut", delay: hidden ? 0 : 0.5 }}
+            onClick={() => setIsMobileExpanded(!isMobileExpanded)}
+            sx={{
+              ...glassStyle,
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: activeTrack ? "8px 12px" : "10px",
+              borderRadius: activeTrack ? "20px" : "50%",
+              cursor: "pointer",
+              border: "1px solid rgba(255, 255, 255, 0.2)",
+              pointerEvents: hidden ? "none" : "auto",
+              minWidth: activeTrack ? "auto" : "40px",
+              minHeight: "40px",
+              justifyContent: "center",
+            }}
+            aria-label="Toggle music player"
+          >
+            {state.isPlaying ? (
+              <EqualizerIcon />
+            ) : (
+              <MusicNoteIcon />
+            )}
+            {activeTrack && (
+              <span sx={{
+                fontSize: "11px",
+                fontWeight: "bold",
+                maxWidth: "120px",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}>
+                {activeTrack.title}
+              </span>
+            )}
+          </motion.button>
+
+          {/* Expanded mobile panel */}
+          <AnimatePresence>
+            {isMobileExpanded && !hidden && (
+              <motion.div
+                initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+                sx={{
+                  ...glassStyle,
+                  position: "absolute",
+                  top: "calc(100% + 8px)",
+                  right: 0,
+                  width: "280px",
+                  maxHeight: "60vh",
+                  overflowY: "auto",
+                  borderRadius: "12px",
+                  p: 3,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 3,
+                  scrollbarWidth: "thin",
+                  "&::-webkit-scrollbar": { width: "4px" },
+                  "&::-webkit-scrollbar-thumb": { background: "rgba(255,255,255,0.2)", borderRadius: "2px" },
+                }}
+              >
+                {/* Header */}
+                <div sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <span sx={{ fontSize: 2, fontWeight: "bold" }}>My Soundtrack</span>
+                  <button
+                    onClick={() => setIsMobileExpanded(false)}
+                    sx={{ ...controlButtonStyle, p: "4px", opacity: 0.5, "&:hover": { opacity: 1 } }}
+                    aria-label="Close player"
+                  >
+                    <CloseIcon />
+                  </button>
+                </div>
+
+                {/* Now Playing */}
+                {activeTrack && (
+                  <div sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                    <div sx={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+                      <span sx={{ fontSize: 1, fontWeight: "bold", lineHeight: 1.3 }}>
+                        {activeTrack.title}
+                      </span>
+                      <span sx={{ fontSize: 0, opacity: 0.6 }}>{activeTrack.artist}</span>
+                      {activeCategory && (
+                        <span sx={{ fontSize: 0, opacity: 0.4, fontStyle: "italic" }}>
+                          {activeCategory.label}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Progress bar */}
+                    <div
+                      onClick={handleSeek}
+                      sx={{
+                        height: "6px",
+                        bg: "rgba(255,255,255,0.15)",
+                        borderRadius: "3px",
+                        cursor: "pointer",
+                        position: "relative",
+                        overflow: "hidden",
+                      }}
+                    >
+                      <div
+                        sx={{
+                          position: "absolute",
+                          top: 0,
+                          left: 0,
+                          height: "100%",
+                          bg: "highlight",
+                          borderRadius: "3px",
+                          width: state.duration ? `${(state.currentTime / state.duration) * 100}%` : "0%",
+                          transition: "width 0.25s linear",
+                        }}
+                      />
+                    </div>
+
+                    {/* Time */}
+                    <div sx={{ display: "flex", justifyContent: "space-between", fontSize: "10px", opacity: 0.5 }}>
+                      <span>{formatTime(state.currentTime)}</span>
+                      <span>{state.duration ? formatTime(state.duration) : "--:--"}</span>
+                    </div>
+
+                    {/* Controls */}
+                    <div sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 3 }}>
+                      <button
+                        onClick={handlePrevTrack}
+                        sx={controlButtonStyle}
+                        disabled={!activeCategory || activeCategory.tracks.length <= 1}
+                        aria-label="Previous track"
+                      >
+                        <PrevIcon />
+                      </button>
+                      <button
+                        onClick={togglePlayPause}
+                        sx={{
+                          ...controlButtonStyle,
+                          bg: "rgba(255,255,255,0.12)",
+                          p: 2,
+                          opacity: 1,
+                          "&:hover": { bg: "rgba(255,255,255,0.2)", opacity: 1 },
+                        }}
+                        aria-label={state.isPlaying ? "Pause" : "Play"}
+                      >
+                        {state.isPlaying ? <PauseIcon /> : <PlayIcon />}
+                      </button>
+                      <button
+                        onClick={handleNextTrack}
+                        sx={controlButtonStyle}
+                        disabled={!activeCategory || activeCategory.tracks.length <= 1}
+                        aria-label="Next track"
+                      >
+                        <NextIcon />
+                      </button>
+                    </div>
+
+                    {/* Volume */}
+                    <div sx={{ display: "flex", alignItems: "center", gap: 2, px: 1 }}>
+                      <VolumeIcon muted={state.volume === 0} />
+                      <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        value={state.volume}
+                        onChange={(e) => setVolume(Number(e.target.value))}
+                        sx={{
+                          flex: 1,
+                          height: "4px",
+                          appearance: "none",
+                          bg: "rgba(255,255,255,0.15)",
+                          borderRadius: "2px",
+                          outline: "none",
+                          "&::-webkit-slider-thumb": {
+                            appearance: "none",
+                            width: "16px",
+                            height: "16px",
+                            borderRadius: "50%",
+                            bg: "highlight",
+                            cursor: "pointer",
+                          },
+                          "&::-moz-range-thumb": {
+                            width: "16px",
+                            height: "16px",
+                            borderRadius: "50%",
+                            bg: "highlight",
+                            border: "none",
+                            cursor: "pointer",
+                          },
+                        }}
+                        aria-label="Volume"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Categories */}
+                {!hasAnyTracks ? (
+                  <div sx={{ textAlign: "center", opacity: 0.5, py: 4, fontSize: 1 }}>
+                    No tracks added yet.
+                  </div>
+                ) : (
+                  <div sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                    {categories.map((category) => {
+                      const isCatExpanded = expandedCategoryId === category.id;
+                      const isCategoryActive = activeCategoryId === category.id;
+
+                      return (
+                        <div key={category.id}>
+                          <div
+                            onClick={() => setExpandedCategoryId(isCatExpanded ? null : category.id)}
+                            sx={{
+                              display: "flex",
+                              flexDirection: "column",
+                              gap: 1,
+                              p: 2,
+                              borderRadius: "6px",
+                              cursor: "pointer",
+                              border: "1px solid",
+                              borderColor: isCategoryActive ? "highlight" : "rgba(255,255,255,0.1)",
+                              bg: isCategoryActive ? "rgba(255,255,255,0.1)" : "transparent",
+                              transition: "all 0.2s ease",
+                            }}
+                          >
+                            <div sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                              <span sx={{ fontSize: 1, fontWeight: "bold" }}>{category.label}</span>
+                              <span sx={{ fontSize: 0, opacity: 0.5 }}>
+                                {category.tracks.length} track{category.tracks.length !== 1 ? "s" : ""}
+                              </span>
+                            </div>
+                            {category.description && (
+                              <span sx={{ fontSize: 0, opacity: 0.5, fontStyle: "italic" }}>
+                                {category.description}
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Track list */}
+                          {isCatExpanded && (
+                            <div sx={{ display: "flex", flexDirection: "column", mt: 1, ml: 1 }}>
+                              {category.tracks.map((track, index) => {
+                                const isActiveTrack = isCategoryActive && activeTrackIndex === index;
+
+                                return (
+                                  <div
+                                    key={`${category.id}-${index}`}
+                                    onClick={() => handleTrackSelect(category, index)}
+                                    sx={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                      gap: 2,
+                                      p: "8px",
+                                      borderRadius: "4px",
+                                      cursor: "pointer",
+                                      bg: isActiveTrack ? "rgba(255,255,255,0.12)" : "transparent",
+                                      transition: "background 0.15s ease",
+                                    }}
+                                  >
+                                    <span sx={{ fontSize: 0, opacity: 0.4, width: "16px", textAlign: "center", flexShrink: 0 }}>
+                                      {isActiveTrack && state.isPlaying ? <EqualizerIcon /> : index + 1}
+                                    </span>
+                                    <div sx={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
+                                      <span
+                                        sx={{
+                                          fontSize: 0,
+                                          fontWeight: isActiveTrack ? "bold" : "normal",
+                                          whiteSpace: "nowrap",
+                                          overflow: "hidden",
+                                          textOverflow: "ellipsis",
+                                        }}
+                                      >
+                                        {track.title}
+                                      </span>
+                                      <span sx={{ fontSize: "10px", opacity: 0.5 }}>{track.artist}</span>
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* Error state */}
+                {state.error && (
+                  <div sx={{ fontSize: 0, color: "red", textAlign: "center", opacity: 0.8 }}>
+                    Failed to load track. Try another.
+                  </div>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </>
+    );
+  }
+
+  // --- Desktop music player (rail + panel) ---
   return (
     <>
-      {/* Hidden YouTube player */}
-      <div
-        id={YOUTUBE_CONTAINER_ID}
-        sx={{
-          position: "fixed",
-          top: "-9999px",
-          left: "-9999px",
-          width: "1px",
-          height: "1px",
-          opacity: 0,
-          pointerEvents: "none",
-        }}
-      />
+      {youtubeContainer}
 
       {/* Centering wrapper — full height, flex center, no transform conflict */}
       <div

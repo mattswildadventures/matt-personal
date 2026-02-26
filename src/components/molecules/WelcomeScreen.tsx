@@ -27,7 +27,7 @@ const snippets = [
     route: "/mindset",
   },
   {
-    text: "40+ technologies, from HTML to knowledge graphs, AI, and MCP. Browse them in Skills.",
+    text: "The toolkit behind over a decade of running businesses, supporting 100+ companies, from startups to ASX-listed. Browse them in Skills.",
     route: "/skills",
   },
   {
@@ -245,9 +245,10 @@ export default function WelcomeScreen({ onHighlight, onComplete }: WelcomeScreen
   const greetingStyle: ThemeUICSSObject = {
     color: textColor,
     fontSize: [24, 30, 36],
-    fontWeight: 300,
+    fontWeight: 400,
     mb: [4, 5],
     letterSpacing: "-0.5px",
+    textShadow: "0 1px 4px rgba(0, 0, 0, 0.4)",
   };
 
   return (
@@ -339,7 +340,9 @@ export default function WelcomeScreen({ onHighlight, onComplete }: WelcomeScreen
                 sx={{
                   color: textColor,
                   fontSize: [13, 14, 16],
+                  fontWeight: 400,
                   lineHeight: 1.8,
+                  textShadow: "0 1px 3px rgba(0, 0, 0, 0.35)",
                   mb: [2, "16px"],
                   cursor: "pointer",
                   transition: "transform 0.3s ease",
