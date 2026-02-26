@@ -50,6 +50,14 @@ export default function Layout({ children }: LayoutProps): JSX.Element {
     setIsMusicExpanded(false);
   }, []);
 
+  // Dismiss welcome when global setting syncs to false (e.g. localStorage on load).
+  // Toggling it back on in settings takes effect on next refresh, not immediately.
+  useEffect(() => {
+    if (!showWelcome.val) {
+      setWelcomeActive(false);
+    }
+  }, [showWelcome.val]);
+
   const handleWelcomeComplete = useCallback(() => {
     setWelcomeActive(false);
     setHighlightedRoute(null);
