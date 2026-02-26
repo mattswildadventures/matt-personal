@@ -44,7 +44,7 @@ const roadmap: Record<string, RoadmapItem[]> = {
       timeline: "Q1-Q2 2025",
       description: "Build meaningful connections within the tech community and industry",
       remark:
-        "Focusing on quality over quantity in professional relationships. This involves active participation in tech communities, mentorship opportunities, and industry events.",
+        "Focusing on quality over quantity in professional relationships. This involves active participation in tech communities, mentorship opportunities and industry events.",
       milestones: [
         "Attend 6 tech conferences or meetups",
         "Connect with 50 industry professionals",
@@ -70,7 +70,7 @@ const roadmap: Record<string, RoadmapItem[]> = {
       timeline: "2025-2026",
       description: "Develop technical leadership skills and team management capabilities",
       remark:
-        "Transitioning from individual contributor to technical leader requires developing new skills in communication, strategic thinking, and team dynamics. This roadmap focuses on practical leadership experience.",
+        "Transitioning from individual contributor to technical leader requires developing new skills in communication, strategic thinking and team dynamics. This roadmap focuses on practical leadership experience.",
       milestones: [
         "Lead cross-functional project team of 5+ people",
         "Complete leadership training program",
@@ -87,9 +87,9 @@ const roadmap: Record<string, RoadmapItem[]> = {
     {
       title: "Product Strategy & Architecture",
       timeline: "2025-2027",
-      description: "Build expertise in product strategy, system architecture, and business alignment",
+      description: "Build expertise in product strategy, system architecture and business alignment",
       remark:
-        "Moving beyond just technical implementation to understanding business value, user needs, and long-term strategic planning. This involves working closely with product managers and stakeholders.",
+        "Moving beyond just technical implementation to understanding business value, user needs and long-term strategic planning. This involves working closely with product managers and stakeholders.",
       milestones: [
         "Design and architect 2 major system components",
         "Lead product planning sessions",
@@ -115,7 +115,7 @@ const roadmap: Record<string, RoadmapItem[]> = {
       timeline: "2027-2030",
       description: "Create meaningful impact in the tech industry through innovation and thought leadership",
       remark:
-        "At this stage, the focus shifts to creating lasting impact beyond individual projects. This involves innovation, industry influence, and potentially entrepreneurial ventures.",
+        "At this stage, the focus shifts to creating lasting impact beyond individual projects. This involves innovation, industry influence and potentially entrepreneurial ventures.",
       milestones: [
         "Launch innovative product or startup",
         "Publish research or whitepapers with industry impact",
@@ -134,7 +134,7 @@ const roadmap: Record<string, RoadmapItem[]> = {
       timeline: "2028-2030",
       description: "Build systems and knowledge that outlast individual contributions",
       remark:
-        "The ultimate goal is to create systems, knowledge, and opportunities that benefit others and continue to grow beyond personal involvement. This includes education, mentorship at scale, and sustainable practices.",
+        "The ultimate goal is to create systems, knowledge and opportunities that benefit others and continue to grow beyond personal involvement. This includes education, mentorship at scale and sustainable practices.",
       milestones: [
         "Establish tech education program or bootcamp",
         "Create open-source framework used by 1000+ companies",

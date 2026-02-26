@@ -27,7 +27,7 @@ export default function NavigationPane({ title, onNavigate }: NavigationPaneProp
             {researchInsights[category].map((insight, j) => (
               <NavigationPaneItem
                 key={j}
-                icon={["FcFile", "FcOpenedFolder"]} // Use file icons from React Icons (Flat Color)
+                icon={["PiFileText", "PiFolderOpen"]}
                 text={insight.title}
                 isActive={title === insight.title}
                 onClick={() => onNavigate(insight.title)}

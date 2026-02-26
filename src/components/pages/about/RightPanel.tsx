@@ -11,7 +11,7 @@ export default function RightPanel() {
     p: 4,
     mt: [4, null, 0],
     ml: [null, null, 4],
-    textAlign: "justify",
+    textAlign: "left",
     flex: 1, // Make this component fill available space
 
     ...(useMatchTheme(ThemeMode.Tron) && {

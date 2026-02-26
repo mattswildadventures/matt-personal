@@ -23,9 +23,9 @@ const mindset: Record<string, MindsetItem[]> = {
     {
       title: "Growth Mindset Foundation",
       timeline: "2020 - Present",
-      description: "Fundamental beliefs about the ability to develop skills, intelligence, and character through dedication and hard work",
+      description: "Fundamental beliefs about the ability to develop skills, intelligence and character through dedication and hard work",
       remark:
-        "This foundation shapes how I approach challenges, setbacks, and opportunities for learning. It's based on the understanding that abilities can be developed through effort, strategy, and help from others.",
+        "This foundation shapes how I approach challenges, setbacks and opportunities for learning. It's based on the understanding that abilities can be developed through effort, strategy and help from others.",
       principles: [
         "Embrace challenges as opportunities to grow",
         "View effort as the path to mastery, not a sign of inadequacy",
@@ -44,7 +44,7 @@ const mindset: Record<string, MindsetItem[]> = {
       timeline: "2021 - Present",
       description: "Understanding how individual parts interconnect to create larger wholes and emergent properties",
       remark:
-        "This approach helps me see beyond linear cause-and-effect relationships to understand complex interconnections, feedback loops, and unintended consequences in both personal and professional contexts.",
+        "This approach helps me see beyond linear cause-and-effect relationships to understand complex interconnections, feedback loops and unintended consequences in both personal and professional contexts.",
       principles: [
         "Focus on relationships and patterns rather than isolated events",
         "Recognize that structure drives behavior in systems",
@@ -89,7 +89,7 @@ const mindset: Record<string, MindsetItem[]> = {
       timeline: "2020 - Present",
       description: "Making decisions based on likelihood and expected outcomes rather than certainty",
       remark:
-        "This model helps me navigate uncertainty more effectively by thinking in terms of probabilities, expected values, and ranges of outcomes rather than binary right/wrong predictions.",
+        "This model helps me navigate uncertainty more effectively by thinking in terms of probabilities, expected values and ranges of outcomes rather than binary right/wrong predictions.",
       principles: [
         "Assign probabilities to beliefs and predictions",
         "Update beliefs based on new evidence (Bayesian thinking)",
@@ -113,7 +113,7 @@ const mindset: Record<string, MindsetItem[]> = {
     {
       title: "Antifragile Mindset",
       timeline: "2022 - Present",
-      description: "Developing the ability to grow stronger from stressors, volatility, and challenges",
+      description: "Developing the ability to grow stronger from stressors, volatility and challenges",
       remark:
         "Beyond just being resilient (bouncing back), this mindset focuses on actually benefiting from difficulties and becoming stronger through exposure to controlled stressors and challenges.",
       principles: [
@@ -134,7 +134,7 @@ const mindset: Record<string, MindsetItem[]> = {
       timeline: "2018 - Present",
       description: "Optimizing for long-term outcomes and compound effects over short-term gains",
       remark:
-        "This perspective helps me make decisions that may be difficult in the short term but create exponential benefits over time through compounding effects in learning, relationships, and personal development.",
+        "This perspective helps me make decisions that may be difficult in the short term but create exponential benefits over time through compounding effects in learning, relationships and personal development.",
       principles: [
         "Prioritize learning and skill development over immediate rewards",
         "Invest in relationships and reputation consistently over time",

@@ -418,8 +418,8 @@ export default function MacDock({ welcomeActive, isMusicExpanded, isMusicPlaying
 
   const extendedNavigationIcons = [
     {
-      iconName: "FlatAbout" as const,
-      customIcon: undefined,
+      iconName: undefined,
+      customIcon: <ReactIcon iconName="PiUserFill" size={28} />,
       label: "About Me",
       onClick: () => router.push("/about"),
       href: undefined,
@@ -427,8 +427,8 @@ export default function MacDock({ welcomeActive, isMusicExpanded, isMusicPlaying
       isNavigationIcon: true,
     },
     {
-      iconName: "FlatWork" as const,
-      customIcon: undefined,
+      iconName: undefined,
+      customIcon: <ReactIcon iconName="PiBriefcaseFill" size={28} />,
       label: "My Work",
       onClick: () => router.push("/work"),
       href: undefined,
@@ -436,8 +436,8 @@ export default function MacDock({ welcomeActive, isMusicExpanded, isMusicPlaying
       isNavigationIcon: true,
     },
     {
-      iconName: "FlatSkills" as const,
-      customIcon: undefined,
+      iconName: undefined,
+      customIcon: <ReactIcon iconName="PiWrenchFill" size={28} />,
       label: "Skills",
       onClick: () => router.push("/skills"),
       href: undefined,
@@ -445,8 +445,8 @@ export default function MacDock({ welcomeActive, isMusicExpanded, isMusicPlaying
       isNavigationIcon: true,
     },
     {
-      iconName: "FlatEdu" as const,
-      customIcon: undefined,
+      iconName: undefined,
+      customIcon: <ReactIcon iconName="PiBookOpenFill" size={28} />,
       label: "Research Paper",
       onClick: () => router.push("/research-paper"),
       href: undefined,
@@ -454,8 +454,8 @@ export default function MacDock({ welcomeActive, isMusicExpanded, isMusicPlaying
       isNavigationIcon: true,
     },
     {
-      iconName: "FlatAbout" as const,
-      customIcon: undefined,
+      iconName: undefined,
+      customIcon: <ReactIcon iconName="PiBrainFill" size={28} />,
       label: "My Mindset",
       onClick: () => router.push("/mindset"),
       href: undefined,
@@ -463,8 +463,8 @@ export default function MacDock({ welcomeActive, isMusicExpanded, isMusicPlaying
       isNavigationIcon: true,
     },
     {
-      iconName: "FlatWork" as const,
-      customIcon: undefined,
+      iconName: undefined,
+      customIcon: <ReactIcon iconName="PiCompassFill" size={28} />,
       label: "Roadmap",
       onClick: () => router.push("/roadmap"),
       href: undefined,
@@ -599,8 +599,8 @@ export default function MacDock({ welcomeActive, isMusicExpanded, isMusicPlaying
 
     // Settings (always present)
     {
-      iconName: "FlatSettings" as const,
-      customIcon: undefined,
+      iconName: undefined,
+      customIcon: <ReactIcon iconName="PiGearFill" size={28} />,
       label: "Settings",
       onClick: () => setIsConfigActive(!isConfigActive),
       href: undefined,

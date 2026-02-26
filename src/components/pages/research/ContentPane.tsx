@@ -86,7 +86,7 @@ export default function ContentPane({ title }: { title?: string }) {
     } else if (insight) {
       // Standard insight layout with optional principles
       content = (
-        <MotionBox key={title} {...fade} sx={{ textAlign: "justify" }}>
+        <MotionBox key={title} {...fade} sx={{ textAlign: "left" }}>
           <H2 style={alignment}>{insight.title}</H2>
           <SubTitle style={{ ...alignment, fontStyle: "italic" }}>{insight.subtitle}</SubTitle>
           {insight.content.map((paragraph, i) => (

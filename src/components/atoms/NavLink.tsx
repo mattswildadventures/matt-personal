@@ -2,7 +2,7 @@ import { motion, Transition, Variants } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { ComponentType } from "react";
-import { HiUser, HiBriefcase, HiCode, HiBookOpen, HiLightningBolt, HiMap } from "react-icons/hi";
+import { PiUserFill, PiBriefcaseFill, PiWrenchFill, PiBookOpenFill, PiBrainFill, PiCompassFill } from "react-icons/pi";
 import { ThemeUICSSObject } from "theme-ui";
 import { useBackgroundLuminance } from "../../hooks/useBackgroundLuminance";
 import useHomepage from "../../hooks/useHomepage";
@@ -16,12 +16,12 @@ import { sizes, ThemeMode } from "../../themes";
 import { MotionIcon } from "./Icon";
 
 const routeIcons: Record<string, ComponentType<{ size?: number }>> = {
-  "/about": HiUser,
-  "/work": HiBriefcase,
-  "/skills": HiCode,
-  "/research-paper": HiBookOpen,
-  "/mindset": HiLightningBolt,
-  "/roadmap": HiMap,
+  "/about": PiUserFill,
+  "/work": PiBriefcaseFill,
+  "/skills": PiWrenchFill,
+  "/research-paper": PiBookOpenFill,
+  "/mindset": PiBrainFill,
+  "/roadmap": PiCompassFill,
 };
 
 type NavLinkProps = {

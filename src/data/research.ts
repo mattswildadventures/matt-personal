@@ -24,18 +24,18 @@ const research: Record<string, ResearchPaper[]> = {
       title: "About",
       timeline: "2024 – Present",
       description:
-        "Foundational research into how mindsets are formed, structured, and transformed through internal language, belief systems, and lived experience.",
+        "Foundational research into how mindsets are formed, structured and transformed through internal language, belief systems and lived experience.",
       remark:
-        "This paper introduces a multi-layered model for understanding mindset construction, combining cognitive science, systems thinking, and chaos theory. It proposes that mindset is an emergent architecture shaped by recursive language patterns, environmental conditioning, and feedback loops.",
+        "This paper introduces a multi-layered model for understanding mindset construction, combining cognitive science, systems thinking and chaos theory. It proposes that mindset is an emergent architecture shaped by recursive language patterns, environmental conditioning and feedback loops.",
       findings: [
         "Developed the 'Model of Fractal Mindset Construction' based on Iceberg and Systems Thinking frameworks.",
-        "Established a recursive pattern framework for beliefs, values, and principles to scale cognitive structures.",
+        "Established a recursive pattern framework for beliefs, values and principles to scale cognitive structures.",
         "Defined the 'Antifragile Mindset' as a practical outcome of principle-stacking and adaptive self-talk.",
         "Introduced the concept of 'Fractal Linguistics' as a lens to decode mindset formation and transformation.",
       ],
       methodology: [
         "Iterative personal experimentation and field application",
-        "Qualitative synthesis of neuroscience, psychology, systems theory, and chaos metaphors",
+        "Qualitative synthesis of neuroscience, psychology, systems theory and chaos metaphors",
         "Framework development through double-loop and triple-loop learning cycles",
       ],
       links: {
@@ -49,7 +49,7 @@ const research: Record<string, ResearchPaper[]> = {
       description:
         "An exploration into how fixed mindsets are unconsciously formed through early conditioning and how growth-oriented frameworks can enable transformation.",
       remark:
-        "This section reflects on personal patterns, education systems, and societal structures that unconsciously shape mindset and identity. It examines the role of language and belief as hidden drivers of life decisions, emotional states, and patterns of disempowerment.",
+        "This section reflects on personal patterns, education systems and societal structures that unconsciously shape mindset and identity. It examines the role of language and belief as hidden drivers of life decisions, emotional states and patterns of disempowerment.",
       findings: [
         "Mapped language patterns from negative core beliefs and reframed them using principle-based reconstruction.",
         "Explored education-induced mindset shaping via the 'Order of Learning' and 'Expectation Entropy' models.",
@@ -70,19 +70,19 @@ const research: Record<string, ResearchPaper[]> = {
       title: "How it got started?",
       timeline: "2022 – 2023",
       description:
-        "Origin story and early working theories behind mindset formation, self-talk structures, and the role of belief in navigating struggle and growth.",
+        "Origin story and early working theories behind mindset formation, self-talk structures and the role of belief in navigating struggle and growth.",
       remark:
-        "This paper began as a personal investigation into repeated mental patterns during moments of high pressure, chaos, and disorder. Over time, it evolved into a formal system for mapping, measuring, and reconstructing mindset through structured language and feedback.",
+        "This paper began as a personal investigation into repeated mental patterns during moments of high pressure, chaos and disorder. Over time, it evolved into a formal system for mapping, measuring and reconstructing mindset through structured language and feedback.",
       findings: [
         "Recognized language as a proxy for underlying belief architecture.",
         "Discovered the power of principle stacking in navigating extreme endurance events.",
         "Linked entropy and internal disorder to emotional overwhelm and identity fragmentation.",
-        "Introduced the idea of 'Language Resilience'—where coherent belief structures prevent collapse under stress.",
+        "Introduced the idea of 'Language Resilience', where coherent belief structures prevent collapse under stress.",
       ],
       methodology: [
         "Narrative pattern recognition across lived experiences",
         "Rapid prototyping of mental models in high-stakes environments",
-        "Cross-disciplinary reading across chaos theory, neuroscience, and linguistics",
+        "Cross-disciplinary reading across chaos theory, neuroscience and linguistics",
       ],
       links: {
         $1: ["Antifragile Mindset Case Study", "#"],
@@ -98,7 +98,7 @@ const research: Record<string, ResearchPaper[]> = {
       description:
         "A new model for decoding mindset using recursive language structures and chaos theory principles. Treats language as a fractal architecture for internal cognitive systems.",
       remark:
-        "This model reframes mindset through 8 linguistic principles like emergence, feedback loops, and self-similarity. It provides a framework to zoom in and out of personal narrative, belief systems, and emotion using the same underlying structure.",
+        "This model reframes mindset through 8 linguistic principles like emergence, feedback loops and self-similarity. It provides a framework to zoom in and out of personal narrative, belief systems and emotion using the same underlying structure.",
       findings: [
         "Created the 'Scalable Model of Cognition' from Chaos → Neuroscience → Psychology → Narrative.",
         "Identified recursive language patterns tied to fixed vs. growth mindsets.",
@@ -119,7 +119,7 @@ const research: Record<string, ResearchPaper[]> = {
       title: "Holarchy",
       timeline: "2023 – Present",
       description:
-        "Application of nested systems theory to internal mindset architecture—where beliefs, values, and principles form layered structures that operate at different levels of decision-making.",
+        "Application of nested systems theory to internal mindset architecture, where beliefs, values and principles form layered structures that operate at different levels of decision-making.",
       remark:
         "Holarchy is used as a vertical structuring tool to organize how small truths scale into larger adaptive systems. It enables recursive interpretation of experiences through nested feedback loops.",
       findings: [
@@ -142,9 +142,9 @@ const research: Record<string, ResearchPaper[]> = {
       title: "Antifragile Mindset",
       timeline: "2024 – Present",
       description:
-        "A lived case study and applied prototype demonstrating how mindsets can strengthen through exposure to uncertainty, struggle, and unknowns.",
+        "A lived case study and applied prototype demonstrating how mindsets can strengthen through exposure to uncertainty, struggle and unknowns.",
       remark:
-        "Rooted in endurance event preparation, this model applies principle stacking to navigate the 'Edge of Chaos.' The antifragile mindset is not reactive but adaptive—designed to grow stronger through mental feedback and emotional calibration.",
+        "Rooted in endurance event preparation, this model applies principle stacking to navigate the 'Edge of Chaos.' The antifragile mindset is not reactive but adaptive. Designed to grow stronger through mental feedback and emotional calibration.",
       findings: [
         "Introduced breath-based feedback loops for pacing and emotion regulation.",
         "Developed mental rehearsal tools for pre-event and in-event cognitive stability.",
@@ -168,7 +168,7 @@ const research: Record<string, ResearchPaper[]> = {
       timeline: "2021 - 2022",
       description: "Historical analysis and future predictions for JavaScript framework development and adoption",
       remark:
-        "A comprehensive study tracking the evolution of JavaScript frameworks from jQuery to modern solutions, analyzing adoption patterns, community growth, and technological innovations.",
+        "A comprehensive study tracking the evolution of JavaScript frameworks from jQuery to modern solutions, analyzing adoption patterns, community growth and technological innovations.",
       findings: [
         "Analyzed adoption patterns across 1000+ companies",
         "Identified key innovation cycles in framework development",

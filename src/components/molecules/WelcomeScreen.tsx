@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { useRouter } from "next/router";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { ThemeUICSSObject } from "theme-ui";
 import { GlobalContext } from "../../contexts/GlobalContext";
@@ -13,46 +12,26 @@ type WelcomeScreenProps = {
   onComplete: () => void;
 };
 
-const snippets = [
-  {
-    text: "14 years from tennis coaching to founding Minnio. The full timeline lives in Work.",
-    route: "/work",
-  },
-  {
-    text: "Writing a research paper that maps the architecture and construction of our mindset, exploring how patterns, language, and experience shape the way we think.",
-    route: "/research-paper",
-  },
-  {
-    text: "Antifragile thinking. First principles. Systems thinking. The mental models behind the work, collected in Mindset.",
-    route: "/mindset",
-  },
-  {
-    text: "The toolkit behind over a decade of running businesses, supporting 100+ companies, from startups to ASX-listed. Browse them in Skills.",
-    route: "/skills",
-  },
-  {
-    text: "Adventurer. OCR athlete. Represented Australia. Backpacked 23 countries. More in About.",
-    route: "/about",
-  },
-  {
-    text: "Where I've been, where I'm heading, and what I'm building next. Mapped out in Roadmap.",
-    route: "/roadmap",
-  },
-];
+// Previous snippets — kept for reference
+// const snippets = [
+//   { text: "14 years from tennis coaching to founding Minnio. The full timeline lives in Work.", route: "/work" },
+//   { text: "Writing a research paper that maps the architecture and construction of our mindset, exploring how patterns, language, and experience shape the way we think.", route: "/research-paper" },
+//   { text: "Antifragile thinking. First principles. Systems thinking. The mental models behind the work, collected in Mindset.", route: "/mindset" },
+//   { text: "The toolkit behind over a decade of running businesses, supporting 100+ companies, from startups to ASX-listed. Browse them in Skills.", route: "/skills" },
+//   { text: "Adventurer. OCR athlete. Represented Australia. Backpacked 23 countries. More in About.", route: "/about" },
+//   { text: "Where I've been, where I'm heading, and what I'm building next. Mapped out in Roadmap.", route: "/roadmap" },
+// ];
+
+const welcomeText = "Welcome in, I wanted a place that felt like me. Not a resume, not a portfolio, just somewhere honest to put the things I care about. What I'm building, how I think, the lessons I've picked up along the way and where I'm headed next. Some of it's polished, some of it's still taking shape. Pull up a chair and have a look around.";
 
 export default function WelcomeScreen({ onHighlight, onComplete }: WelcomeScreenProps) {
-  const router = useRouter();
   const { showWelcome, reduceMotion } = useContext(GlobalContext);
   const isMobile = useInBreakpoint(1);
   const taskbarHeight = useTaskbarHeight();
 
-  // Phases: greeting → cycling → idle (stays open) → exiting → done
-  const [phase, setPhase] = useState<"greeting" | "cycling" | "idle" | "exiting" | "done">("greeting");
+  const [phase, setPhase] = useState<"greeting" | "idle" | "exiting" | "done">("greeting");
   const [snippetsVisible, setSnippetsVisible] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(-1);
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const timersRef = useRef<NodeJS.Timeout[]>([]);
-  const snippetRefs = useRef<(HTMLParagraphElement | null)[]>([]);
 
   const isTronTheme = useMatchTheme(ThemeMode.Tron);
   const isCyberpunkTheme = useMatchTheme(ThemeMode.Cyberpunk);
@@ -82,44 +61,15 @@ export default function WelcomeScreen({ onHighlight, onComplete }: WelcomeScreen
     }
   }, []);
 
-  // Greeting phase → show snippets → start cycling
+  // Greeting phase → show text → go idle
   useEffect(() => {
     if (phase === "greeting") {
       addTimer(() => setSnippetsVisible(true), 1600);
-      addTimer(() => {
-        setPhase("cycling");
-        setActiveIndex(0);
-      }, 2600);
+      addTimer(() => setPhase("idle"), 2600);
     }
     return clearTimers;
   }, [phase, addTimer, clearTimers]);
 
-  // Cycling through snippets — slower pace (2.5s per snippet)
-  useEffect(() => {
-    if (phase !== "cycling" || activeIndex < 0) return;
-
-    if (activeIndex < snippets.length) {
-      onHighlight(snippets[activeIndex].route);
-      addTimer(() => setActiveIndex((i) => i + 1), 2500);
-    } else {
-      // Done cycling — go idle, panel stays open
-      onHighlight(null);
-      setActiveIndex(-1);
-      setPhase("idle");
-    }
-    return clearTimers;
-  }, [phase, activeIndex, addTimer, clearTimers, onHighlight]);
-
-  // Hover overrides highlight
-  useEffect(() => {
-    if (hoveredIndex !== null) {
-      onHighlight(snippets[hoveredIndex].route);
-    } else if (phase === "cycling" && activeIndex >= 0 && activeIndex < snippets.length) {
-      onHighlight(snippets[activeIndex].route);
-    } else {
-      onHighlight(null);
-    }
-  }, [hoveredIndex, phase, activeIndex, onHighlight]);
 
   // Dismiss handler — used by Skip, Explore, and clicking outside
   const handleDismiss = useCallback(() => {
@@ -134,26 +84,7 @@ export default function WelcomeScreen({ onHighlight, onComplete }: WelcomeScreen
     }, 600);
   }, [clearTimers, onHighlight, showWelcome, onComplete]);
 
-  const handleSnippetClick = useCallback(
-    (route: string) => {
-      clearTimers();
-      onHighlight(null);
-      showWelcome.set(false);
-      setPhase("done");
-      onComplete();
-      router.push(route);
-    },
-    [router, clearTimers, onHighlight, showWelcome, onComplete]
-  );
-
   if (phase === "done") return null;
-
-  // The currently focused index (hover takes priority, then cycling, then nothing)
-  const focusedIndex = hoveredIndex !== null
-    ? hoveredIndex
-    : (phase === "cycling" && activeIndex >= 0 && activeIndex < snippets.length)
-      ? activeIndex
-      : hoveredIndex;
 
   // Glass panel background per theme
   const getPanelBg = (): string => {
@@ -193,7 +124,6 @@ export default function WelcomeScreen({ onHighlight, onComplete }: WelcomeScreen
   };
 
   const textColor = getTextColor();
-  const hasFocus = focusedIndex !== null;
   const isFinished = phase === "idle";
 
   const containerStyle: ThemeUICSSObject = {
@@ -213,7 +143,7 @@ export default function WelcomeScreen({ onHighlight, onComplete }: WelcomeScreen
     position: "relative",
     maxWidth: isMobile ? "calc(100vw - 32px)" : "740px",
     width: "100%",
-    minHeight: isMobile ? "auto" : "400px",
+    minHeight: isMobile ? "auto" : "340px",
     background: getPanelBg(),
     backdropFilter: "blur(12px) saturate(1.4)",
     WebkitBackdropFilter: "blur(12px) saturate(1.4)",
@@ -294,73 +224,25 @@ export default function WelcomeScreen({ onHighlight, onComplete }: WelcomeScreen
           Hey, I&apos;m Matt.
         </motion.h1>
 
-        {/* Snippets with sliding focus indicator */}
-        <div sx={{ position: "relative" }}>
-          {/* Sliding accent bar — uses layoutId for smooth movement */}
-          {focusedIndex !== null && snippetsVisible && (
-            <motion.div
-              layoutId="welcome-focus-bar"
-              sx={{
-                position: "absolute",
-                left: 0,
-                width: "2px",
-                background: "highlight",
-                borderRadius: "1px",
-                // Glow effect on the bar
-                boxShadow: (theme: any) => {
-                  const c = theme.colors?.highlight || "#1abc9c";
-                  return `0 0 8px ${c}, 0 0 16px ${c}60`;
-                },
-              }}
-              style={{
-                top: snippetRefs.current[focusedIndex]?.offsetTop ?? 0,
-                height: snippetRefs.current[focusedIndex]?.offsetHeight ?? 24,
-              }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            />
-          )}
-
-          {snippets.map((snippet, index) => {
-            const isFocused = focusedIndex === index;
-
-            return (
-              <motion.p
-                key={snippet.route}
-                ref={(el) => { snippetRefs.current[index] = el; }}
-                initial={{ opacity: 0, x: -16 }}
-                animate={{
-                  opacity: snippetsVisible ? (hasFocus ? (isFocused ? 1 : 0.4) : 0.7) : 0,
-                  x: snippetsVisible ? 0 : -16,
-                }}
-                transition={{
-                  opacity: { duration: 0.3, delay: snippetsVisible ? index * 0.08 : 0 },
-                  x: { duration: 0.4, delay: index * 0.08 },
-                }}
-                onMouseEnter={() => setHoveredIndex(index)}
-                onMouseLeave={() => setHoveredIndex(null)}
-                onClick={() => handleSnippetClick(snippet.route)}
-                sx={{
-                  color: textColor,
-                  fontSize: [13, 14, 16],
-                  fontWeight: 400,
-                  lineHeight: 1.8,
-                  textShadow: "0 1px 3px rgba(0, 0, 0, 0.35)",
-                  mb: [2, "16px"],
-                  cursor: "pointer",
-                  transition: "transform 0.3s ease",
-                  transform: isFocused ? "translateX(6px)" : "translateX(0)",
-                  paddingLeft: "16px",
-                  userSelect: "none",
-                  "&:last-child": {
-                    mb: 0,
-                  },
-                }}
-              >
-                {snippet.text}
-              </motion.p>
-            );
-          })}
-        </div>
+        {/* Welcome text */}
+        <motion.p
+          initial={{ opacity: 0, y: 12 }}
+          animate={{
+            opacity: snippetsVisible ? 0.85 : 0,
+            y: snippetsVisible ? 0 : 12,
+          }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          sx={{
+            color: textColor,
+            fontSize: [15, 17, 19],
+            fontWeight: 400,
+            lineHeight: 1.9,
+            textShadow: "0 1px 3px rgba(0, 0, 0, 0.35)",
+            m: 0,
+          }}
+        >
+          {welcomeText}
+        </motion.p>
       </motion.div>
     </motion.div>
   );

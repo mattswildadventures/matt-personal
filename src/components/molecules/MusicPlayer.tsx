@@ -540,7 +540,7 @@ export default function MusicPlayer({ hidden, isHomePage, isMobileExpanded: exte
                                     <span sx={{ fontSize: 0, opacity: 0.4, width: "16px", textAlign: "center", flexShrink: 0 }}>
                                       {isActiveTrack && state.isPlaying ? <EqualizerIcon /> : index + 1}
                                     </span>
-                                    <div sx={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
+                                    <div sx={{ display: "flex", flexDirection: "column", minWidth: 0, flex: 1 }}>
                                       <span
                                         sx={{
                                           fontSize: 0,
@@ -554,6 +554,28 @@ export default function MusicPlayer({ hidden, isHomePage, isMobileExpanded: exte
                                       </span>
                                       <span sx={{ fontSize: "10px", opacity: 0.5 }}>{track.artist}</span>
                                     </div>
+                                    <span
+                                      role="link"
+                                      title="Open on YouTube"
+                                      onClick={(e: React.MouseEvent) => {
+                                        e.stopPropagation();
+                                        window.open(`https://www.youtube.com/watch?v=${track.youtubeId}`, "_blank", "noopener");
+                                        window.focus();
+                                      }}
+                                      sx={{
+                                        flexShrink: 0,
+                                        opacity: 0.3,
+                                        cursor: "pointer",
+                                        p: "4px",
+                                        borderRadius: "4px",
+                                        transition: "opacity 0.15s ease",
+                                        "&:hover": { opacity: 0.8 },
+                                        display: "flex",
+                                        alignItems: "center",
+                                      }}
+                                    >
+                                      <ExternalLinkIcon />
+                                    </span>
                                   </div>
                                 );
                               })}
@@ -1019,7 +1041,7 @@ export default function MusicPlayer({ hidden, isHomePage, isMobileExpanded: exte
                                   <span sx={{ fontSize: 0, opacity: 0.4, width: "16px", textAlign: "center", flexShrink: 0 }}>
                                     {isActiveTrack && state.isPlaying ? <EqualizerIcon /> : index + 1}
                                   </span>
-                                  <div sx={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
+                                  <div sx={{ display: "flex", flexDirection: "column", minWidth: 0, flex: 1 }}>
                                     <span
                                       sx={{
                                         fontSize: 0,
@@ -1033,6 +1055,29 @@ export default function MusicPlayer({ hidden, isHomePage, isMobileExpanded: exte
                                     </span>
                                     <span sx={{ fontSize: "10px", opacity: 0.5 }}>{track.artist}</span>
                                   </div>
+                                  <span
+                                    role="link"
+                                    title="Open on YouTube"
+                                    onClick={(e: React.MouseEvent) => {
+                                      e.stopPropagation();
+                                      window.open(`https://www.youtube.com/watch?v=${track.youtubeId}`, "_blank", "noopener");
+                                      window.focus();
+                                    }}
+                                    sx={{
+                                      flexShrink: 0,
+                                      opacity: 0,
+                                      cursor: "pointer",
+                                      p: "4px",
+                                      borderRadius: "4px",
+                                      transition: "opacity 0.15s ease",
+                                      "div:hover > &": { opacity: 0.3 },
+                                      "&:hover": { opacity: "0.8 !important" },
+                                      display: "flex",
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    <ExternalLinkIcon />
+                                  </span>
                                 </div>
                               );
                             })}
@@ -1116,6 +1161,12 @@ const VolumeIcon = ({ muted }: { muted: boolean }) => (
     ) : (
       <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
     )}
+  </svg>
+);
+
+const ExternalLinkIcon = () => (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M19 19H5V5h7V3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z" />
   </svg>
 );
 

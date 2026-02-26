@@ -26,7 +26,7 @@ export default function ContentPane({ title }: { title?: string }) {
       .find((job) => job.title === title);
 
     content = (
-      <MotionBox key={title} {...fade} sx={{ textAlign: "justify" }}>
+      <MotionBox key={title} {...fade} sx={{ textAlign: "left" }}>
         <H2 style={alignment}>{job?.title}</H2>
         <SubTitle style={alignment}>{job?.timeline}</SubTitle>
         <P style={{ fontStyle: "italic", mb: 5 }}>{job?.description}</P>

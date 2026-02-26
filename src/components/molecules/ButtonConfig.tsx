@@ -6,7 +6,7 @@ import useIsLandscape from "../../hooks/useIsLandscape";
 import useMatchTheme from "../../hooks/useMatchTheme";
 import { ThemeMode } from "../../themes";
 import { MotionButton } from "../atoms/Button";
-import Icon from "../atoms/Icon";
+import ReactIcon from "../atoms/IconReact";
 
 type ButtonConfigProps = {
   isActive?: boolean;
@@ -44,7 +44,7 @@ const ButtonConfig = ({ isActive, onClick }: ButtonConfigProps, ref: ForwardedRe
       onClick={onClick}
       aria-label="Site config"
     >
-      <Icon iconName="FlatSettings" size={size} />
+      <ReactIcon iconName="PiGearFill" size={size} />
     </MotionButton>
   );
 };

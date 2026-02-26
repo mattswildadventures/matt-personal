@@ -18,6 +18,9 @@ const music: MusicCategory[] = [
     description: "Metallica. Enough said.",
     tracks: [
       { title: "Master of Puppets", artist: "Metallica", youtubeId: "E0ozmU9cJDg" },
+      { title: "Whole Lotta Love", artist: "Led Zeppelin", youtubeId: "HQmmM_qwG4k" },
+      { title: "The Number of the Beast", artist: "Iron Maiden", youtubeId: "WxnN05vOuSM" },
+      { title: "Chop Suey!", artist: "System of a Down", youtubeId: "CSvFpBOe8eY" },
     ],
   },
   {
@@ -26,6 +29,8 @@ const music: MusicCategory[] = [
     description: "Songs I grew up hearing from my old man",
     tracks: [
       { title: "Mr. Tambourine Man", artist: "Bob Dylan", youtubeId: "oecX_1pqxk0" },
+      { title: "How to Make Gravy", artist: "Paul Kelly", youtubeId: "iYqIF2XkqKU" },
+      { title: "Harvest Moon", artist: "Neil Young", youtubeId: "n2MtEsrcTTs" },
     ],
   },
   {
@@ -42,6 +47,9 @@ const music: MusicCategory[] = [
     description: "Deserves way more recognition",
     tracks: [
       { title: "Into the Abyss", artist: "Hilltop Hoods", youtubeId: "Z_JV26Adon8" },
+      { title: "Ghost Love Score", artist: "Nightwish", youtubeId: "47e_961OQWE" },
+      { title: "The Nights", artist: "Avicii", youtubeId: "H78YW7ycuwI" },
+      { title: "Phantom of the Opera", artist: "Floor Jansen", youtubeId: "plCScjvDOJM" },
     ],
   },
   {

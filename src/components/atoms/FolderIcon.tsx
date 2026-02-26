@@ -91,7 +91,7 @@ const AnimatedFolderIcon = ({ isOpen = false, size = 24, className }: FolderIcon
 };
 
 const ClassicFolderIcon = ({ isOpen = false, size = 24 }: FolderIconProps) => {
-  const iconName = isOpen ? "FcOpenedFolder" : "FcFolder";
+  const iconName = isOpen ? "PiFolderOpen" : "PiFolder";
   return <ReactIcon iconName={iconName} size={size} />;
 };
 
