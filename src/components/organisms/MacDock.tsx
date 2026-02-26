@@ -25,9 +25,12 @@ import PanelConfig from "../molecules/PanelConfig";
 
 type MacDockProps = {
   welcomeActive?: boolean;
+  isMusicExpanded?: boolean;
+  isMusicPlaying?: boolean;
+  onToggleMusic?: () => void;
 };
 
-export default function MacDock({ welcomeActive }: MacDockProps) {
+export default function MacDock({ welcomeActive, isMusicExpanded, isMusicPlaying, onToggleMusic }: MacDockProps) {
   const router = useRouter();
   const { hideTaskbar, showExtendedDockDesktop, showExtendedDockMobile, dockMagnification } = useContext(GlobalContext);
   const [isConfigActive, setIsConfigActive] = useState(false);
@@ -136,8 +139,9 @@ export default function MacDock({ welcomeActive }: MacDockProps) {
       socialCount = shouldShowSeparator ? 4 : 3; // 3 icons + separator if conditions met
     }
     
+    const musicCount = 1; // Music icon on mobile
     const settingsCount = 1;
-    const totalIcons = coreNavigationCount + extendedNavigationCount + socialCount + settingsCount;
+    const totalIcons = coreNavigationCount + extendedNavigationCount + socialCount + musicCount + settingsCount;
 
     // Available width calculation - account for iPhone safe area
     const taskbarPadding = 20; // Reduced padding for better fit
@@ -523,10 +527,38 @@ export default function MacDock({ welcomeActive }: MacDockProps) {
     // },
   ];
 
+  // Music icon for mobile dock
+  const MusicDockIcon = () => (
+    <div sx={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" sx={{ opacity: 0.8 }}>
+        <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55C7.79 13 6 14.79 6 17s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
+      </svg>
+      {/* Playing indicator dot */}
+      {isMusicPlaying && (
+        <div
+          sx={{
+            position: "absolute",
+            bottom: "-3px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: "4px",
+            height: "4px",
+            borderRadius: "50%",
+            bg: "highlight",
+            boxShadow: (theme: any) => {
+              const c = theme.colors?.highlight || "#1abc9c";
+              return `0 0 4px ${c}, 0 0 8px ${c}`;
+            },
+          }}
+        />
+      )}
+    </div>
+  );
+
   // Dock icons configuration (env-controlled social display)
   const dockIcons = [
     ...navigationIcons,
-    
+
     // Social icons based on environment configuration
     ...(socialDisplayMode === 'popup' ? [
       // Popup mode: Single share icon with popup
@@ -552,7 +584,18 @@ export default function MacDock({ welcomeActive }: MacDockProps) {
       }] : []),
       ...desktopSocialIcons
     ]),
-    
+
+    // Music icon (mobile only)
+    ...(isMobile && onToggleMusic ? [{
+      iconName: undefined,
+      customIcon: <MusicDockIcon />,
+      label: "Music",
+      onClick: onToggleMusic,
+      href: undefined,
+      isActive: !!isMusicExpanded,
+      isNavigationIcon: false,
+    }] : []),
+
     // Settings (always present)
     {
       iconName: "FlatSettings" as const,

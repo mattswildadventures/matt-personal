@@ -203,7 +203,9 @@ export default function WelcomeScreen({ onHighlight, onComplete }: WelcomeScreen
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    background: isDark ? "rgba(0, 0, 0, 0.2)" : "rgba(0, 0, 0, 0.1)",
+    background: isMobile
+      ? (isDark ? "rgba(0, 0, 0, 0.6)" : "rgba(0, 0, 0, 0.5)")
+      : (isDark ? "rgba(0, 0, 0, 0.2)" : "rgba(0, 0, 0, 0.1)"),
     paddingBottom: `${taskbarHeight}px`,
   };
 
@@ -211,7 +213,7 @@ export default function WelcomeScreen({ onHighlight, onComplete }: WelcomeScreen
     position: "relative",
     maxWidth: isMobile ? "calc(100vw - 32px)" : "740px",
     width: "100%",
-    minHeight: isMobile ? "340px" : "400px",
+    minHeight: isMobile ? "auto" : "400px",
     background: getPanelBg(),
     backdropFilter: "blur(12px) saturate(1.4)",
     WebkitBackdropFilter: "blur(12px) saturate(1.4)",

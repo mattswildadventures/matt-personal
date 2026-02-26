@@ -34,7 +34,7 @@ export default function ThemeButton({ theme }: ThemeButtonProps) {
       unsetStyle
       whileHover={{ scale: isActive ? 1 : 0.95 }}
       onClick={() => cachedTheme.set(theme)}
-      sx={{ borderRadius: "6px", overflow: "hidden", position: "relative" }}
+      sx={{ borderRadius: "6px", overflow: "hidden", position: "relative", width: "fit-content" }}
       aria-label={`${theme} theme`}
       aria-pressed={isActive}
     >

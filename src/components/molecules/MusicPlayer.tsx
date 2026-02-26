@@ -4,6 +4,7 @@ import { useClickAway, useKey } from "react-use";
 import { ThemeUICSSObject } from "theme-ui";
 import useMatchTheme from "../../hooks/useMatchTheme";
 import useInBreakpoint from "../../hooks/useInBreakpoint";
+import useTaskbarHeight from "../../hooks/useTaskbarHeight";
 import useYouTubePlayer from "../../hooks/useYouTubePlayer";
 import { ThemeMode } from "../../themes";
 import music, { MusicCategory } from "../../data/music";
@@ -15,9 +16,13 @@ const PANEL_WIDTH = 280;
 
 type MusicPlayerProps = {
   hidden?: boolean;
+  isHomePage?: boolean;
+  isMobileExpanded?: boolean;
+  onMobileExpandedChange?: (expanded: boolean) => void;
+  onPlayingStateChange?: (playing: boolean) => void;
 };
 
-export default function MusicPlayer({ hidden }: MusicPlayerProps) {
+export default function MusicPlayer({ hidden, isHomePage, isMobileExpanded: externalMobileExpanded, onMobileExpandedChange, onPlayingStateChange }: MusicPlayerProps) {
   const isMobile = useInBreakpoint(1);
   const isSoftTheme = useMatchTheme(ThemeMode.Soft);
   const isClassicTheme = useMatchTheme(ThemeMode.Classic);
@@ -180,7 +185,24 @@ export default function MusicPlayer({ hidden }: MusicPlayerProps) {
 
   const hasAnyTracks = categories.length > 0;
   const [isHovered, setIsHovered] = useState(false);
-  const [isMobileExpanded, setIsMobileExpanded] = useState(false);
+  const taskbarHeight = useTaskbarHeight();
+
+  // Use lifted state from Layout if provided, otherwise local state
+  const [localMobileExpanded, setLocalMobileExpanded] = useState(false);
+  const isMobileExpanded = externalMobileExpanded ?? localMobileExpanded;
+  const setIsMobileExpanded = useCallback((val: boolean | ((prev: boolean) => boolean)) => {
+    const newVal = typeof val === "function" ? val(isMobileExpanded) : val;
+    if (onMobileExpandedChange) {
+      onMobileExpandedChange(newVal);
+    } else {
+      setLocalMobileExpanded(newVal);
+    }
+  }, [onMobileExpandedChange, isMobileExpanded]);
+
+  // Report playing state changes to parent
+  useEffect(() => {
+    onPlayingStateChange?.(state.isPlaying);
+  }, [state.isPlaying, onPlayingStateChange]);
 
   const mobilePlayerRef = useRef<HTMLDivElement>(null);
 
@@ -204,33 +226,45 @@ export default function MusicPlayer({ hidden }: MusicPlayerProps) {
     />
   );
 
-  // --- Mobile music player ---
+  // Auto-hide music panel on scroll (mobile only)
+  useEffect(() => {
+    if (!isMobile || !isMobileExpanded) return;
+    const handleScroll = () => {
+      setIsMobileExpanded(false);
+    };
+    // Listen for scroll on any scrollable window body element
+    const scrollTargets = document.querySelectorAll("[data-window-body]");
+    scrollTargets.forEach((el) => el.addEventListener("scroll", handleScroll, { passive: true }));
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      scrollTargets.forEach((el) => el.removeEventListener("scroll", handleScroll));
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [isMobile, isMobileExpanded, setIsMobileExpanded]);
+
+  // --- Mobile music player (dock-anchored panel) ---
   if (isMobile) {
+    // Show floating button only on home page (no window open)
+    const showFloatingButton = isHomePage && !hidden;
+
     return (
       <>
         {youtubeContainer}
 
-        {/* Mobile music button + expanded panel */}
-        <div
-          ref={mobilePlayerRef}
-          sx={{
-            position: "fixed",
-            top: "12px",
-            right: "12px",
-            zIndex: 100,
-          }}
-        >
-          {/* Floating music button */}
+        {/* Floating music button — home screen only */}
+        {showFloatingButton && (
           <motion.button
             initial={{ y: -60, opacity: 0 }}
-            animate={{
-              y: hidden ? -60 : 0,
-              opacity: hidden ? 0 : 1,
-            }}
-            transition={{ duration: 0.4, ease: "easeOut", delay: hidden ? 0 : 0.5 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -60, opacity: 0 }}
+            transition={{ duration: 0.4, ease: "easeOut", delay: 0.5 }}
             onClick={() => setIsMobileExpanded(!isMobileExpanded)}
             sx={{
               ...glassStyle,
+              position: "fixed",
+              top: "12px",
+              right: "12px",
+              zIndex: 100,
               display: "flex",
               alignItems: "center",
               gap: "8px",
@@ -238,7 +272,6 @@ export default function MusicPlayer({ hidden }: MusicPlayerProps) {
               borderRadius: activeTrack ? "20px" : "50%",
               cursor: "pointer",
               border: "1px solid rgba(255, 255, 255, 0.2)",
-              pointerEvents: hidden ? "none" : "auto",
               minWidth: activeTrack ? "auto" : "40px",
               minHeight: "40px",
               justifyContent: "center",
@@ -263,28 +296,49 @@ export default function MusicPlayer({ hidden }: MusicPlayerProps) {
               </span>
             )}
           </motion.button>
+        )}
 
-          {/* Expanded mobile panel */}
-          <AnimatePresence>
-            {isMobileExpanded && !hidden && (
+        {/* Mobile panel anchored above dock */}
+        <AnimatePresence>
+          {isMobileExpanded && !hidden && (
+            <>
+              {/* Backdrop */}
               <motion.div
-                initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setIsMobileExpanded(false)}
+                sx={{
+                  position: "fixed",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  backgroundColor: "rgba(0, 0, 0, 0.2)",
+                  zIndex: 99,
+                }}
+              />
+              {/* Panel */}
+              <motion.div
+                ref={mobilePlayerRef}
+                initial={{ opacity: 0, y: 20, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                exit={{ opacity: 0, y: 20, scale: 0.95 }}
                 transition={{ duration: 0.2, ease: "easeOut" }}
                 sx={{
                   ...glassStyle,
-                  position: "absolute",
-                  top: "calc(100% + 8px)",
-                  right: 0,
-                  width: "280px",
-                  maxHeight: "60vh",
+                  position: "fixed",
+                  bottom: `${taskbarHeight + 12}px`,
+                  left: "12px",
+                  right: "12px",
+                  maxHeight: "55vh",
                   overflowY: "auto",
-                  borderRadius: "12px",
+                  borderRadius: "16px",
                   p: 3,
                   display: "flex",
                   flexDirection: "column",
                   gap: 3,
+                  zIndex: 100,
                   scrollbarWidth: "thin",
                   "&::-webkit-scrollbar": { width: "4px" },
                   "&::-webkit-scrollbar-thumb": { background: "rgba(255,255,255,0.2)", borderRadius: "2px" },
@@ -518,9 +572,9 @@ export default function MusicPlayer({ hidden }: MusicPlayerProps) {
                   </div>
                 )}
               </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+            </>
+          )}
+        </AnimatePresence>
       </>
     );
   }

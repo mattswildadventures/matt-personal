@@ -50,5 +50,5 @@ export default function WindowBody({ children }: WindowBodyProps) {
     }),
   };
 
-  return <div sx={bodyStyle}>{children}</div>;
+  return <div data-window-body sx={bodyStyle}>{children}</div>;
 }

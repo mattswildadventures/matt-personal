@@ -28,7 +28,14 @@ export default function MacTrafficLights({ onClose, onMinimize, onMaximize }: Ma
     borderRadius: "50%",
     cursor: "pointer",
     transition: "all 0.2s ease",
-    
+    padding: 0,
+    margin: 0,
+    minWidth: 0,
+    minHeight: 0,
+    appearance: "none" as const,
+    outline: "none",
+    boxSizing: "border-box",
+
     "&:hover": {
       transform: "scale(1.1)",
     },

@@ -69,6 +69,7 @@ export default function Window({ title, children, help }: WindowProps) {
       bottom: 0,
       width: "100%",
       height: "100%",
+      margin: 0,
     }),
 
     ...(isSoftTheme && {

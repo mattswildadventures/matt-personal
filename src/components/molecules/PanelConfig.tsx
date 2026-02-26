@@ -46,14 +46,14 @@ const PanelConfig = ({ isVisible }: PanelConfigProps, ref: ForwardedRef<HTMLElem
       borderRadius: "8px",
     }),
 
-    // Mobile: bottom sheet style
+    // Mobile: bottom sheet style, sitting above the dock
     ...(isMobile && {
       position: "fixed",
       left: 0,
       right: 0,
-      bottom: 0,
+      bottom: taskbarHeight,
       borderRadius: "16px 16px 0 0",
-      maxHeight: "80vh",
+      maxHeight: "70vh",
       overflowY: "auto",
       paddingBottom: "env(safe-area-inset-bottom, 16px)",
     }),
@@ -95,37 +95,31 @@ const PanelConfig = ({ isVisible }: PanelConfigProps, ref: ForwardedRef<HTMLElem
 
   const reduceMotionTransition = useReduceMotion();
 
-  // For mobile: just show/hide with transform
-  // For desktop: slide from left
-  const getMobileStyle = (): ThemeUICSSObject => {
-    if (!isMobile) return {};
-    return {
-      transform: isVisible ? "translateY(0)" : "translateY(100%)",
-      transition: "transform 0.3s ease-out",
-    };
+  // Mobile: slide up from below the dock
+  const mobileVariants: Variants = {
+    hidden: { y: `calc(100% + ${taskbarHeight}px)`, x: 0 },
+    visible: { y: 0, x: 0 },
   };
 
-  // Desktop variants (slide from left)
+  // Desktop: slide from left
   const desktopVariants: Variants = {
-    hidden: { x: "-105%" },
-    visible: { x: 0 },
+    hidden: { x: "-105%", y: 0 },
+    visible: { x: 0, y: 0 },
   };
 
   return (
     <MotionBox
       ref={ref}
-      sx={{ ...panelConfigStyle, ...getMobileStyle() }}
-      {...(!isMobile && {
-        initial: "hidden",
-        animate: isVisible ? "visible" : "hidden",
-        variants: desktopVariants,
-        transition: { duration: 0.3, ease: "easeOut" },
-      })}
+      sx={panelConfigStyle}
+      initial="hidden"
+      animate={isVisible ? "visible" : "hidden"}
+      variants={isMobile ? mobileVariants : desktopVariants}
+      transition={{ duration: 0.3, ease: "easeOut" }}
       role="dialog"
       aria-label="Settings"
       aria-hidden={!isVisible}
     >
-      <List sx={{ display: "grid", gridTemplateColumns: "auto auto", gap: 3, mb: 4 }}>
+      <List sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 3, mb: 4 }}>
         <li>
           <ThemeButton theme={ThemeMode.Flat} />
         </li>

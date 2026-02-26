@@ -38,6 +38,18 @@ export default function Layout({ children }: LayoutProps): JSX.Element {
   const [highlightedRoute, setHighlightedRoute] = useState<string | null>(null);
   const [welcomeActive, setWelcomeActive] = useState(showWelcome.val && isHomePage);
 
+  // Lifted music player state for dock integration on mobile
+  const [isMusicExpanded, setIsMusicExpanded] = useState(false);
+  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+
+  const toggleMusicExpanded = useCallback(() => {
+    setIsMusicExpanded((prev) => !prev);
+  }, []);
+
+  const closeMusicPlayer = useCallback(() => {
+    setIsMusicExpanded(false);
+  }, []);
+
   const handleWelcomeComplete = useCallback(() => {
     setWelcomeActive(false);
     setHighlightedRoute(null);
@@ -109,8 +121,19 @@ export default function Layout({ children }: LayoutProps): JSX.Element {
           <Fragment key={useRouter().asPath}>{children}</Fragment>
         </AnimatePresence>
       </Desktop>
-      <MacDock welcomeActive={welcomeActive} />
-      <MusicPlayer hidden={welcomeActive} />
+      <MacDock
+        welcomeActive={welcomeActive}
+        isMusicExpanded={isMusicExpanded}
+        isMusicPlaying={isMusicPlaying}
+        onToggleMusic={toggleMusicExpanded}
+      />
+      <MusicPlayer
+        hidden={welcomeActive}
+        isHomePage={isHomePage}
+        isMobileExpanded={isMusicExpanded}
+        onMobileExpandedChange={setIsMusicExpanded}
+        onPlayingStateChange={setIsMusicPlaying}
+      />
 
       {/* Welcome screen overlay */}
       {welcomeActive && isHomePage && (

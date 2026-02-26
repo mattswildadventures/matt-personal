@@ -26,6 +26,7 @@ export default function Desktop({ children }: DesktopProps) {
     // Ensure mobile doesn't overflow
     ...(isMobile && {
       maxHeight: `calc(100dvh - ${taskbarHeight}px)`, // Modern browsers with fallback
+      overflow: "hidden",
     }),
   };
 

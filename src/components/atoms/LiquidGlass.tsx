@@ -68,6 +68,8 @@ export default function LiquidGlass({
       overflow: "visible",
       // Ensure full height for mobile windows
       height: "100%",
+      // Square off corners on mobile to match Window container
+      borderRadius: 0,
     }),
     
     // Fallback for browsers without backdrop-filter support
