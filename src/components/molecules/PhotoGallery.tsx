@@ -583,10 +583,20 @@ export default function PhotoGallery({
                   {currentCollection && (
                     <button
                       onClick={handlePopOut}
-                      sx={{ ...controlButtonStyle, p: "4px", opacity: 0.5, "&:hover": { opacity: 1 } }}
-                      aria-label="Open in window"
+                      sx={{
+                        ...controlButtonStyle,
+                        p: "4px 8px",
+                        borderRadius: "6px",
+                        opacity: 0.5,
+                        gap: "4px",
+                        fontSize: "11px",
+                        fontWeight: "bold",
+                        "&:hover": { opacity: 1, bg: "rgba(255,255,255,0.1)" },
+                      }}
+                      aria-label="Open Gallery"
                     >
                       <ArrowsOutIcon />
+                      Open Gallery
                     </button>
                   )}
                   <button
@@ -1012,15 +1022,19 @@ export default function PhotoGallery({
                         onClick={handlePopOut}
                         sx={{
                           ...controlButtonStyle,
-                          p: "6px",
+                          p: "4px 8px",
                           borderRadius: "6px",
                           opacity: 0.5,
+                          gap: "4px",
+                          fontSize: "11px",
+                          fontWeight: "bold",
                           "&:hover": { opacity: 1, bg: "rgba(255,255,255,0.1)" },
                         }}
-                        aria-label="Pop out to window"
-                        title="Open in window"
+                        aria-label="Open Gallery"
+                        title="Open in gallery window"
                       >
                         <ArrowsOutIcon />
+                        Open Gallery
                       </button>
                     )}
                     <button
