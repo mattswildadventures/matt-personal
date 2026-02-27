@@ -62,6 +62,7 @@ export default function NavigationPane({
         borderRight: ["none", null, "1px solid rgba(255, 255, 255, 0.1)"],
         borderBottom: ["1px solid rgba(255, 255, 255, 0.1)", null, "none"],
         overflow: "auto",
+        overscrollBehavior: "contain",
         zIndex: zIndex.window,
         p: 4,
       }}

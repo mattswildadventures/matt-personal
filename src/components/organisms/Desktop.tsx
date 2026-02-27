@@ -23,10 +23,10 @@ export default function Desktop({ children }: DesktopProps) {
     justifyContent: "center",
     zIndex: zIndex.desktop,
     transition: "height 0.6s",
-    // Ensure mobile doesn't overflow
+    overflow: "hidden",
+    touchAction: "none",
     ...(isMobile && {
-      maxHeight: `calc(100dvh - ${taskbarHeight}px)`, // Modern browsers with fallback
-      overflow: "hidden",
+      maxHeight: `calc(100dvh - ${taskbarHeight}px)`,
     }),
   };
 

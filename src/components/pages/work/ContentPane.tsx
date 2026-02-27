@@ -66,6 +66,7 @@ export default function ContentPane({ title }: { title?: string }) {
         py: 4,
         flex: 1,
         overflow: "auto",
+        overscrollBehavior: "contain",
         zIndex: 1,
       }}
     >

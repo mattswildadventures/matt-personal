@@ -9,8 +9,15 @@ body {
   font-family: "Adelle Sans", "Segoe UI", sans-serif;
   /* Fix mobile viewport height issues */
   height: 100%;
-  /* Prevent horizontal scrolling on mobile */
-  overflow-x: hidden;
+  /* Prevent all scrolling on the outer shell */
+  overflow: hidden;
+  /* Prevent Safari rubber-band bounce */
+  overscroll-behavior: none;
+}
+
+#__next {
+  height: 100%;
+  overflow: hidden;
 }
 
 /* Mobile-specific viewport fixes */
@@ -25,9 +32,10 @@ body {
     min-height: -webkit-fill-available;
   }
   
-  /* Ensure body fills the available space */
+  /* Lock body on mobile to prevent any page-level scroll */
   body {
-    position: relative;
+    position: fixed;
+    width: 100%;
   }
 }
 

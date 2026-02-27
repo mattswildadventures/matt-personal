@@ -14,6 +14,7 @@ export default function RightPanel() {
     textAlign: "left",
     flex: 1,
     overflow: "auto",
+    overscrollBehavior: "contain",
 
     ...(useMatchTheme(ThemeMode.Tron) && {
       bg: "transparent",

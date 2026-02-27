@@ -23,14 +23,8 @@ export default function WindowBody({ children }: WindowBodyProps) {
     display: "flex",
     flexDirection: "column",
 
-    // Mobile-specific scrolling enhancements and dock spacing
+    // Mobile-specific dock spacing
     ...(isMobile && {
-      // Ensure proper touch scrolling
-      WebkitOverflowScrolling: "touch",
-      // Prevent momentum scrolling from affecting parent
-      overscrollBehavior: "contain",
-      // Smooth scrolling for better UX
-      scrollBehavior: "smooth",
       // Add bottom padding to prevent content from going behind dock
       paddingBottom: `${taskbarHeight + 16}px`,
     }),
