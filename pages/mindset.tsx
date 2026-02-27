@@ -16,8 +16,9 @@ export default function Mindset(): JSX.Element {
 
   return (
     <Window title={getRoute(asPath)?.title + ' - Personal Philosophy & Mental Models'}>
-      <Flex sx={{ 
-        height: "100%", 
+      <Flex sx={{
+        flex: 1,
+        minHeight: 0,
         flexDirection: isMobile ? "column" : "row"
       }}>
         <NavigationPane title={activeItem} onNavigate={(item) => setActiveItem(item)} />

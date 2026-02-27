@@ -107,6 +107,7 @@ export default function ContentPane({ title }: { title?: string }) {
         px: 5,
         py: 4,
         flex: 1,
+        overflow: "auto",
         zIndex: 1,
       }}
     >

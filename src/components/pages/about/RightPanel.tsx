@@ -12,7 +12,8 @@ export default function RightPanel() {
     mt: [4, null, 0],
     ml: [null, null, 4],
     textAlign: "left",
-    flex: 1, // Make this component fill available space
+    flex: 1,
+    overflow: "auto",
 
     ...(useMatchTheme(ThemeMode.Tron) && {
       bg: "transparent",

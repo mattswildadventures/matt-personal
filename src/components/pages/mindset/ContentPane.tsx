@@ -67,6 +67,7 @@ export default function ContentPane({ title }: ContentPaneProps) {
         sx={{
           flex: 1,
           p: 4,
+          overflow: "auto",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -93,6 +94,7 @@ export default function ContentPane({ title }: ContentPaneProps) {
       sx={{
         flex: 1,
         p: [3, null, 4],
+        overflow: "auto",
       }}
       data-scroll-container="mindset"
       key={selectedItem.title}

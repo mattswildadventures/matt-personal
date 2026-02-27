@@ -14,7 +14,7 @@ export type MusicCategory = {
 const music: MusicCategory[] = [
   {
     id: "fav-band",
-    label: "My Fav Band",
+    label: "My Fav Bands",
     description: "Metallica. Enough said.",
     tracks: [
       { title: "Master of Puppets", artist: "Metallica", youtubeId: "E0ozmU9cJDg" },

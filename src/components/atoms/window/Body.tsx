@@ -18,9 +18,10 @@ export default function WindowBody({ children }: WindowBodyProps) {
   
   const bodyStyle: ThemeUICSSObject = {
     bg: "white",
-    p: 4,
     flex: 1,
-    overflow: "auto",
+    overflow: "hidden",
+    display: "flex",
+    flexDirection: "column",
 
     // Mobile-specific scrolling enhancements and dock spacing
     ...(isMobile && {
@@ -32,8 +33,6 @@ export default function WindowBody({ children }: WindowBodyProps) {
       scrollBehavior: "smooth",
       // Add bottom padding to prevent content from going behind dock
       paddingBottom: `${taskbarHeight + 16}px`,
-      // Ensure content doesn't exceed viewport - use dynamic taskbar height
-      maxHeight: `calc(100dvh - ${taskbarHeight + 40}px)`, // Dynamic calculation with buffer
     }),
 
     ...(!useMatchTheme(ThemeMode.Flat) && { bg: "background" }),

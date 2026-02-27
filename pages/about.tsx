@@ -11,7 +11,7 @@ export default function About(): JSX.Element {
 
   return (
     <Window title={getRoute(asPath)?.title}>
-      <Flex sx={{ flexDirection: ["column", null, "row"], height: "100%" }}>
+      <Flex sx={{ flexDirection: ["column", null, "row"], flex: 1, minHeight: 0 }}>
         <LeftPanel />
         <RightPanel />
       </Flex>

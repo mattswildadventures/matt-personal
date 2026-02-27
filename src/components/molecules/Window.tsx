@@ -1,6 +1,5 @@
 import { useIsPresent } from "framer-motion";
-import { ReactNode, useContext, useRef } from "react";
-import { useFullscreen, useToggle } from "react-use";
+import { ReactNode, useContext, useRef, useState } from "react";
 import { ThemeUICSSObject } from "theme-ui";
 import { fadeZoomIn } from "../../animations/fade";
 import { dockScaleIn, dockScaleInFallback } from "../../animations/dockScale";
@@ -9,7 +8,7 @@ import useInBreakpoint from "../../hooks/useInBreakpoint";
 import useIsLandscape from "../../hooks/useIsLandscape";
 import useMatchTheme from "../../hooks/useMatchTheme";
 import useTaskbarHeight from "../../hooks/useTaskbarHeight";
-import { sizes, ThemeMode } from "../../themes";
+import { ThemeMode } from "../../themes";
 import { zIndex } from "../../themes/common";
 import { Box, MotionBox } from "../atoms/Container";
 import LiquidGlass from "../atoms/LiquidGlass";
@@ -24,15 +23,19 @@ type WindowProps = {
 
 export default function Window({ title, children, help }: WindowProps) {
   const { reduceMotion } = useContext(GlobalContext);
-  const [fullscreen, toggleFullscreen] = useToggle(false);
+  const [expanded, setExpanded] = useState(false);
   const ref = useRef(null);
   const isPresent = useIsPresent();
   const isLandscape = useIsLandscape();
   const isMobile = useInBreakpoint(1); // Use 768px breakpoint for better mobile detection
   const taskbarHeight = useTaskbarHeight();
-  useFullscreen(ref, fullscreen);
+  const toggleExpanded = () => setExpanded((prev) => !prev);
   const w = ["100%", null, null, 900];
-  const h = isMobile ? "100%" : ["100%", null, null, `calc(100% - ${sizes[2] * 2}px)`];
+  const h = isMobile
+    ? "100%"
+    : expanded
+      ? `calc(100dvh - ${taskbarHeight}px - 16px)`
+      : "75vh";
 
   const Container = reduceMotion.val ? Box : MotionBox;
   
@@ -50,12 +53,13 @@ export default function Window({ title, children, help }: WindowProps) {
   const style: ThemeUICSSObject = {
     maxWidth: w,
     minWidth: w,
+    height: h,
     maxHeight: h,
-    minHeight: ["100%", null, "initial"],
     display: "flex",
     flexDirection: "column",
     zIndex: zIndex.window,
     overflow: "hidden",
+    transition: "height 0.3s ease, max-height 0.3s ease",
 
     // Apply Mac-style 12px border radius to all themes, remove on mobile for square edges
     borderRadius: isMobile ? "0" : "12px",
@@ -105,7 +109,7 @@ export default function Window({ title, children, help }: WindowProps) {
 
   const WindowContent = (
     <>
-      <WindowTitle onFullscreen={toggleFullscreen} help={help}>
+      <WindowTitle onFullscreen={toggleExpanded} help={help}>
         {isPresent && title}
       </WindowTitle>
       <WindowBody>{children}</WindowBody>

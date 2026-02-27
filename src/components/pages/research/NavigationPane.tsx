@@ -19,7 +19,7 @@ export default function NavigationPane({ title, onNavigate }: NavigationPaneProp
   }
 
   return (
-    <div sx={{ minWidth: 200 }}>
+    <div sx={{ minWidth: 200, overflow: "auto", p: 4 }}>
       {Object.keys(researchInsights).map((category, i) => (
         <React.Fragment key={i}>
           <H3>{category}</H3>
