@@ -56,6 +56,7 @@ const PanelConfig = ({ isVisible }: PanelConfigProps, ref: ForwardedRef<HTMLElem
       maxHeight: "70vh",
       overflowY: "auto",
       overscrollBehavior: "contain",
+      touchAction: "pan-y",
       paddingBottom: "env(safe-area-inset-bottom, 16px)",
     }),
 

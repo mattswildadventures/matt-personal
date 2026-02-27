@@ -194,6 +194,7 @@ export default function Gallery(): JSX.Element {
               maxWidth: 220,
               overflow: "auto",
               overscrollBehavior: "contain",
+              touchAction: "pan-y",
               p: 2,
               borderRight: "1px solid rgba(255,255,255,0.08)",
               display: "flex",
@@ -263,7 +264,7 @@ export default function Gallery(): JSX.Element {
 
         {/* Main photo grid area */}
         <div
-          sx={{ flex: 1, overflow: "auto", overscrollBehavior: "contain", p: 3, position: "relative" }}
+          sx={{ flex: 1, overflow: "auto", overscrollBehavior: "contain", touchAction: "pan-y", p: 3, position: "relative" }}
           data-window-body
         >
           {activeCollection ? (

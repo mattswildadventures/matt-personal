@@ -24,7 +24,6 @@ export default function Desktop({ children }: DesktopProps) {
     zIndex: zIndex.desktop,
     transition: "height 0.6s",
     overflow: "hidden",
-    touchAction: "none",
     ...(isMobile && {
       maxHeight: `calc(100dvh - ${taskbarHeight}px)`,
     }),

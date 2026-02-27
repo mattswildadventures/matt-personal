@@ -69,6 +69,7 @@ export default function ContentPane({ title }: ContentPaneProps) {
           p: 4,
           overflow: "auto",
           overscrollBehavior: "contain",
+          touchAction: "pan-y",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -97,6 +98,7 @@ export default function ContentPane({ title }: ContentPaneProps) {
         p: [3, null, 4],
         overflow: "auto",
         overscrollBehavior: "contain",
+        touchAction: "pan-y",
       }}
       data-scroll-container="mindset"
       key={selectedItem.title}

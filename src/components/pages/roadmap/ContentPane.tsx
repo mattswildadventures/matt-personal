@@ -29,6 +29,7 @@ export default function ContentPane({ title }: ContentPaneProps) {
           p: 4,
           overflow: "auto",
           overscrollBehavior: "contain",
+          touchAction: "pan-y",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -57,6 +58,7 @@ export default function ContentPane({ title }: ContentPaneProps) {
         p: 4,
         overflow: "auto",
         overscrollBehavior: "contain",
+        touchAction: "pan-y",
       }}
       key={selectedItem.title}
       initial={{ opacity: 0, y: 20 }}

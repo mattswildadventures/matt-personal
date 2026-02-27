@@ -109,6 +109,7 @@ export default function ContentPane({ title }: { title?: string }) {
         flex: 1,
         overflow: "auto",
         overscrollBehavior: "contain",
+        touchAction: "pan-y",
         zIndex: 1,
       }}
     >

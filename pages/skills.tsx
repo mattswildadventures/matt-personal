@@ -58,7 +58,7 @@ export default function Skills(): JSX.Element {
 
   return (
     <Window title={getRoute(asPath)?.title} help={helpText}>
-      <Box sx={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0, overflow: "auto", overscrollBehavior: "contain", p: 4 }}>
+      <Box sx={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0, overflow: "auto", overscrollBehavior: "contain", touchAction: "pan-y", p: 4 }}>
         <Box sx={categoryStyle}>
         {categories.map((category) => (
           <CategoryButton key={category} onClick={handleClick(category)} isActive={filters.includes(category)}>
