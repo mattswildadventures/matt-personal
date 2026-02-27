@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useClickAway, useKey } from "react-use";
+import { useClickAway } from "react-use";
 import { ThemeUICSSObject } from "theme-ui";
 import useMatchTheme from "../../hooks/useMatchTheme";
 import useInBreakpoint from "../../hooks/useInBreakpoint";
@@ -39,7 +39,21 @@ export default function PhotoGallery({
   const [isExpanded, setIsExpanded] = useState(false);
   // Navigation stack for drilling into sub-collections
   const [navStack, setNavStack] = useState<PhotoCollection[]>([]);
-  const [lightboxPhoto, setLightboxPhoto] = useState<Photo | null>(null);
+  const [lightboxPhotos, setLightboxPhotos] = useState<Photo[]>([]);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+  const lightboxOpen = lightboxPhotos.length > 0;
+  const lightboxPhoto = lightboxOpen ? lightboxPhotos[lightboxIndex] : null;
+
+  const openLightbox = useCallback((photos: Photo[], index: number) => {
+    setLightboxPhotos(photos);
+    setLightboxIndex(index);
+  }, []);
+  const closeLightbox = useCallback(() => {
+    setLightboxPhotos([]);
+    setLightboxIndex(0);
+  }, []);
+  const lightboxPrev = useCallback(() => setLightboxIndex((i) => (i - 1 + lightboxPhotos.length) % lightboxPhotos.length), [lightboxPhotos.length]);
+  const lightboxNext = useCallback(() => setLightboxIndex((i) => (i + 1) % lightboxPhotos.length), [lightboxPhotos.length]);
 
   // Current view: top-level collections or a drilled-into collection
   const currentCollection = navStack.length > 0 ? navStack[navStack.length - 1] : null;
@@ -50,26 +64,34 @@ export default function PhotoGallery({
     if (isExpanded) setIsExpanded(false);
   });
 
-  // Escape cascades: lightbox → back one level → close panel
-  useKey("Escape", () => {
-    if (lightboxPhoto) {
-      setLightboxPhoto(null);
-    } else if (navStack.length > 0) {
-      setNavStack((prev) => prev.slice(0, -1));
-      setLightboxPhoto(null);
-    } else if (isExpanded) {
-      setIsExpanded(false);
-    }
-  });
+  // Keyboard: Escape cascades (lightbox → back → close panel), arrows cycle photos
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        if (lightboxOpen) {
+          closeLightbox();
+        } else if (navStack.length > 0) {
+          setNavStack((prev) => prev.slice(0, -1));
+        } else if (isExpanded) {
+          setIsExpanded(false);
+        }
+      } else if (lightboxOpen && lightboxPhotos.length > 1) {
+        if (e.key === "ArrowLeft") lightboxPrev();
+        else if (e.key === "ArrowRight") lightboxNext();
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [lightboxOpen, lightboxPhotos.length, lightboxPrev, lightboxNext, navStack.length, isExpanded]);
 
   const handleDrillIn = useCallback((collection: PhotoCollection) => {
     setNavStack((prev) => [...prev, collection]);
-    setLightboxPhoto(null);
+    closeLightbox();
   }, []);
 
   const handleBack = useCallback(() => {
     setNavStack((prev) => prev.slice(0, -1));
-    setLightboxPhoto(null);
+    closeLightbox();
   }, []);
 
   const handlePopOut = useCallback(() => {
@@ -349,10 +371,10 @@ export default function PhotoGallery({
       {/* Direct photos in current collection */}
       {currentCollection?.photos && currentCollection.photos.length > 0 && (
         <div sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
-          {currentCollection.photos.map((photo) => (
+          {currentCollection.photos.map((photo, idx) => (
             <div
               key={photo.id}
-              onClick={() => setLightboxPhoto(photo)}
+              onClick={() => openLightbox(currentCollection.photos!, idx)}
               sx={{
                 borderRadius: "6px",
                 overflow: "hidden",
@@ -385,13 +407,14 @@ export default function PhotoGallery({
   // --- Inline Lightbox ---
   const InlineLightbox = () => {
     if (!lightboxPhoto) return null;
+    const showArrows = lightboxPhotos.length > 1;
     return (
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.2 }}
-        onClick={() => setLightboxPhoto(null)}
+        onClick={() => closeLightbox()}
         sx={{
           position: "absolute",
           top: 0,
@@ -409,7 +432,76 @@ export default function PhotoGallery({
           cursor: "pointer",
         }}
       >
+        {/* Counter */}
+        {showArrows && (
+          <div
+            sx={{ position: "absolute", top: "12px", left: "50%", transform: "translateX(-50%)", color: "white", fontSize: 0, opacity: 0.6, zIndex: 2 }}
+            onClick={(e: React.MouseEvent) => e.stopPropagation()}
+          >
+            {lightboxIndex + 1} / {lightboxPhotos.length}
+          </div>
+        )}
+
+        {/* Prev arrow */}
+        {showArrows && (
+          <button
+            onClick={(e: React.MouseEvent) => { e.stopPropagation(); lightboxPrev(); }}
+            sx={{
+              position: "absolute",
+              left: "8px",
+              top: "50%",
+              transform: "translateY(-50%)",
+              width: "36px",
+              height: "36px",
+              borderRadius: "50%",
+              border: "none",
+              bg: "rgba(255,255,255,0.15)",
+              color: "white",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: 2,
+              transition: "background 0.15s ease",
+              "&:hover": { bg: "rgba(255,255,255,0.3)" },
+            }}
+            aria-label="Previous photo"
+          >
+            <NavArrowLeftIcon />
+          </button>
+        )}
+
+        {/* Next arrow */}
+        {showArrows && (
+          <button
+            onClick={(e: React.MouseEvent) => { e.stopPropagation(); lightboxNext(); }}
+            sx={{
+              position: "absolute",
+              right: "8px",
+              top: "50%",
+              transform: "translateY(-50%)",
+              width: "36px",
+              height: "36px",
+              borderRadius: "50%",
+              border: "none",
+              bg: "rgba(255,255,255,0.15)",
+              color: "white",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: 2,
+              transition: "background 0.15s ease",
+              "&:hover": { bg: "rgba(255,255,255,0.3)" },
+            }}
+            aria-label="Next photo"
+          >
+            <NavArrowRightIcon />
+          </button>
+        )}
+
         <motion.img
+          key={lightboxPhoto.id}
           initial={{ scale: 0.9 }}
           animate={{ scale: 1 }}
           src={lightboxPhoto.imageUrl}
@@ -602,10 +694,10 @@ export default function PhotoGallery({
                   {/* Direct photos */}
                   {currentCollection.photos && currentCollection.photos.length > 0 && (
                     <div sx={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "6px" }}>
-                      {currentCollection.photos.map((photo) => (
+                      {currentCollection.photos.map((photo, idx) => (
                         <div
                           key={photo.id}
-                          onClick={() => setLightboxPhoto(photo)}
+                          onClick={() => openLightbox(currentCollection.photos!, idx)}
                           sx={{
                             borderRadius: "4px",
                             overflow: "hidden",
@@ -629,12 +721,12 @@ export default function PhotoGallery({
 
               {/* Mobile lightbox */}
               <AnimatePresence>
-                {lightboxPhoto && (
+                {lightboxOpen && lightboxPhoto && (
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    onClick={() => setLightboxPhoto(null)}
+                    onClick={() => closeLightbox()}
                     sx={{
                       position: "fixed",
                       top: 0,
@@ -650,14 +742,109 @@ export default function PhotoGallery({
                       zIndex: 200,
                     }}
                   >
+                    {/* Close button */}
+                    <button
+                      onClick={(e: React.MouseEvent) => { e.stopPropagation(); closeLightbox(); }}
+                      sx={{
+                        position: "absolute",
+                        top: "16px",
+                        right: "16px",
+                        width: "36px",
+                        height: "36px",
+                        borderRadius: "50%",
+                        border: "none",
+                        bg: "rgba(255,255,255,0.2)",
+                        color: "white",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        zIndex: 3,
+                        transition: "background 0.15s ease",
+                        "&:hover": { bg: "rgba(255,255,255,0.35)" },
+                      }}
+                      aria-label="Close lightbox"
+                    >
+                      <CloseIcon />
+                    </button>
+
+                    {/* Counter */}
+                    {lightboxPhotos.length > 1 && (
+                      <div
+                        sx={{ position: "absolute", top: "22px", left: "50%", transform: "translateX(-50%)", color: "white", fontSize: 0, opacity: 0.6, zIndex: 2 }}
+                        onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                      >
+                        {lightboxIndex + 1} / {lightboxPhotos.length}
+                      </div>
+                    )}
+
+                    {/* Prev arrow */}
+                    {lightboxPhotos.length > 1 && (
+                      <button
+                        onClick={(e: React.MouseEvent) => { e.stopPropagation(); lightboxPrev(); }}
+                        sx={{
+                          position: "absolute",
+                          left: "12px",
+                          top: "50%",
+                          transform: "translateY(-50%)",
+                          width: "36px",
+                          height: "36px",
+                          borderRadius: "50%",
+                          border: "none",
+                          bg: "rgba(255,255,255,0.2)",
+                          color: "white",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          zIndex: 2,
+                          transition: "background 0.15s ease",
+                          "&:hover": { bg: "rgba(255,255,255,0.35)" },
+                        }}
+                        aria-label="Previous photo"
+                      >
+                        <NavArrowLeftIcon />
+                      </button>
+                    )}
+
+                    {/* Next arrow */}
+                    {lightboxPhotos.length > 1 && (
+                      <button
+                        onClick={(e: React.MouseEvent) => { e.stopPropagation(); lightboxNext(); }}
+                        sx={{
+                          position: "absolute",
+                          right: "12px",
+                          top: "50%",
+                          transform: "translateY(-50%)",
+                          width: "36px",
+                          height: "36px",
+                          borderRadius: "50%",
+                          border: "none",
+                          bg: "rgba(255,255,255,0.2)",
+                          color: "white",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          zIndex: 2,
+                          transition: "background 0.15s ease",
+                          "&:hover": { bg: "rgba(255,255,255,0.35)" },
+                        }}
+                        aria-label="Next photo"
+                      >
+                        <NavArrowRightIcon />
+                      </button>
+                    )}
+
                     <img
                       src={lightboxPhoto.imageUrl}
                       alt={lightboxPhoto.title}
-                      sx={{ maxWidth: "100%", maxHeight: "70vh", objectFit: "contain", borderRadius: "6px" }}
+                      sx={{ maxWidth: "calc(100% - 80px)", maxHeight: "70vh", objectFit: "contain", borderRadius: "6px" }}
                       onClick={(e: React.MouseEvent) => e.stopPropagation()}
                     />
                     <div sx={{ mt: 2, textAlign: "center", color: "white" }}>
                       <div sx={{ fontSize: 1, fontWeight: "bold" }}>{lightboxPhoto.title}</div>
+                      {lightboxPhoto.description && <div sx={{ fontSize: 0, opacity: 0.7, mt: 1 }}>{lightboxPhoto.description}</div>}
                       {lightboxPhoto.location && <div sx={{ fontSize: 0, opacity: 0.5, mt: 1 }}>{lightboxPhoto.location}</div>}
                     </div>
                   </motion.div>
@@ -856,7 +1043,7 @@ export default function PhotoGallery({
                 </AnimatePresence>
 
                 {/* Inline lightbox overlay */}
-                <AnimatePresence>{lightboxPhoto && <InlineLightbox />}</AnimatePresence>
+                <AnimatePresence>{lightboxOpen && <InlineLightbox />}</AnimatePresence>
               </motion.div>
             )}
           </AnimatePresence>
@@ -895,5 +1082,17 @@ const ArrowsOutIcon = () => (
 const CloseIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
     <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+  </svg>
+);
+
+const NavArrowLeftIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+  </svg>
+);
+
+const NavArrowRightIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
   </svg>
 );

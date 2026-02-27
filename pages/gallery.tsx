@@ -1,5 +1,6 @@
 import { useRouter } from "next/router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+const ReactDOM = require("react-dom") as any; // eslint-disable-line
 import { Flex } from "theme-ui";
 import Window from "../src/components/molecules/Window";
 import Layout from "../src/components/pages/Layout";
@@ -11,8 +12,43 @@ export default function Gallery(): JSX.Element {
   const { query } = useRouter();
   const isMobile = useInBreakpoint(1);
   const [activeCollection, setActiveCollection] = useState<PhotoCollection | null>(null);
-  const [lightboxPhoto, setLightboxPhoto] = useState<Photo | null>(null);
+  const [lightboxPhotos, setLightboxPhotos] = useState<Photo[]>([]);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+
+  const lightboxOpen = lightboxPhotos.length > 0;
+  const lightboxPhoto = lightboxOpen ? lightboxPhotos[lightboxIndex] : null;
+
+  const openLightbox = useCallback((photos: Photo[], index: number) => {
+    setLightboxPhotos(photos);
+    setLightboxIndex(index);
+    setIsFullscreen(false);
+  }, []);
+  const closeLightbox = useCallback(() => {
+    setLightboxPhotos([]);
+    setLightboxIndex(0);
+    setIsFullscreen(false);
+  }, []);
+  const lightboxPrev = useCallback(() => setLightboxIndex((i) => (i - 1 + lightboxPhotos.length) % lightboxPhotos.length), [lightboxPhotos.length]);
+  const lightboxNext = useCallback(() => setLightboxIndex((i) => (i + 1) % lightboxPhotos.length), [lightboxPhotos.length]);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!lightboxOpen) return;
+      if (e.key === "Escape") {
+        if (isFullscreen) setIsFullscreen(false);
+        else closeLightbox();
+      } else if (e.key === "ArrowLeft" && lightboxPhotos.length > 1) {
+        lightboxPrev();
+      } else if (e.key === "ArrowRight" && lightboxPhotos.length > 1) {
+        lightboxNext();
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [lightboxOpen, isFullscreen, lightboxPhotos.length, lightboxPrev, lightboxNext, closeLightbox]);
 
   // Handle ?collection= query param (searches entire tree)
   useEffect(() => {
@@ -59,7 +95,7 @@ export default function Gallery(): JSX.Element {
         <div
           onClick={() => {
             setActiveCollection(collection);
-            setLightboxPhoto(null);
+            closeLightbox();
             if (hasSubs) toggleExpanded(collection.id);
           }}
           sx={{
@@ -141,6 +177,7 @@ export default function Gallery(): JSX.Element {
     : [];
 
   return (
+    <>
     <Window title="Photo Gallery">
       <Flex
         sx={{
@@ -191,7 +228,7 @@ export default function Gallery(): JSX.Element {
               onChange={(e) => {
                 const found = findCollection(photos, e.target.value);
                 setActiveCollection(found);
-                setLightboxPhoto(null);
+                closeLightbox();
               }}
               sx={{
                 width: "100%",
@@ -255,7 +292,7 @@ export default function Gallery(): JSX.Element {
                       key={sub.id}
                       onClick={() => {
                         setActiveCollection(sub);
-                        setLightboxPhoto(null);
+                        closeLightbox();
                         setExpandedIds((prev) => { const next = new Set(prev); next.add(activeCollection.id); return next; });
                       }}
                       sx={{
@@ -302,10 +339,10 @@ export default function Gallery(): JSX.Element {
                     gap: "12px",
                   }}
                 >
-                  {displayPhotos.map((photo) => (
+                  {displayPhotos.map((photo, idx) => (
                     <div
                       key={photo.id}
-                      onClick={() => setLightboxPhoto(photo)}
+                      onClick={() => openLightbox(displayPhotos, idx)}
                       sx={{
                         borderRadius: "8px",
                         overflow: "hidden",
@@ -383,14 +420,14 @@ export default function Gallery(): JSX.Element {
             </div>
           )}
 
-          {/* Lightbox modal overlay */}
+          {/* In-window lightbox overlay */}
           <AnimatePresence>
-            {lightboxPhoto && (
+            {lightboxOpen && lightboxPhoto && !isFullscreen && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                onClick={() => setLightboxPhoto(null)}
+                onClick={() => closeLightbox()}
                 sx={{
                   position: "absolute",
                   top: 0,
@@ -407,7 +444,76 @@ export default function Gallery(): JSX.Element {
                   cursor: "pointer",
                 }}
               >
+                {/* Counter */}
+                {lightboxPhotos.length > 1 && (
+                  <div
+                    sx={{ position: "absolute", top: "16px", left: "50%", transform: "translateX(-50%)", color: "white", fontSize: 0, opacity: 0.6, zIndex: 2 }}
+                    onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                  >
+                    {lightboxIndex + 1} / {lightboxPhotos.length}
+                  </div>
+                )}
+
+                {/* Prev arrow */}
+                {lightboxPhotos.length > 1 && (
+                  <button
+                    onClick={(e: React.MouseEvent) => { e.stopPropagation(); lightboxPrev(); }}
+                    sx={{
+                      position: "absolute",
+                      left: "16px",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      width: "40px",
+                      height: "40px",
+                      borderRadius: "50%",
+                      border: "none",
+                      bg: "rgba(255,255,255,0.15)",
+                      color: "white",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      zIndex: 2,
+                      transition: "background 0.15s ease",
+                      "&:hover": { bg: "rgba(255,255,255,0.3)" },
+                    }}
+                    aria-label="Previous photo"
+                  >
+                    <LightboxArrowLeft />
+                  </button>
+                )}
+
+                {/* Next arrow */}
+                {lightboxPhotos.length > 1 && (
+                  <button
+                    onClick={(e: React.MouseEvent) => { e.stopPropagation(); lightboxNext(); }}
+                    sx={{
+                      position: "absolute",
+                      right: "16px",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      width: "40px",
+                      height: "40px",
+                      borderRadius: "50%",
+                      border: "none",
+                      bg: "rgba(255,255,255,0.15)",
+                      color: "white",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      zIndex: 2,
+                      transition: "background 0.15s ease",
+                      "&:hover": { bg: "rgba(255,255,255,0.3)" },
+                    }}
+                    aria-label="Next photo"
+                  >
+                    <LightboxArrowRight />
+                  </button>
+                )}
+
                 <motion.img
+                  key={lightboxPhoto.id}
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   exit={{ scale: 0.9, opacity: 0 }}
@@ -434,38 +540,239 @@ export default function Gallery(): JSX.Element {
                     <div sx={{ fontSize: 0, opacity: 0.5, mt: 1 }}>{lightboxPhoto.location}</div>
                   )}
                 </div>
-                <button
-                  onClick={() => setLightboxPhoto(null)}
-                  sx={{
-                    position: "absolute",
-                    top: "16px",
-                    right: "16px",
-                    background: "rgba(255,255,255,0.15)",
-                    border: "none",
-                    color: "white",
-                    width: "32px",
-                    height: "32px",
-                    borderRadius: "50%",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    transition: "background 0.15s ease",
-                    "&:hover": { background: "rgba(255,255,255,0.25)" },
-                  }}
-                  aria-label="Close lightbox"
+
+                {/* Top-right buttons: expand + close */}
+                <div
+                  sx={{ position: "absolute", top: "16px", right: "16px", display: "flex", gap: "8px", zIndex: 2 }}
+                  onClick={(e: React.MouseEvent) => e.stopPropagation()}
                 >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
-                  </svg>
-                </button>
+                  <button
+                    onClick={() => setIsFullscreen(true)}
+                    sx={{
+                      background: "rgba(255,255,255,0.15)",
+                      border: "none",
+                      color: "white",
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "50%",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      transition: "background 0.15s ease",
+                      "&:hover": { background: "rgba(255,255,255,0.25)" },
+                    }}
+                    aria-label="Expand fullscreen"
+                  >
+                    <LightboxExpandIcon />
+                  </button>
+                  <button
+                    onClick={() => closeLightbox()}
+                    sx={{
+                      background: "rgba(255,255,255,0.15)",
+                      border: "none",
+                      color: "white",
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "50%",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      transition: "background 0.15s ease",
+                      "&:hover": { background: "rgba(255,255,255,0.25)" },
+                    }}
+                    aria-label="Close lightbox"
+                  >
+                    <LightboxCloseIcon />
+                  </button>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>
         </div>
       </Flex>
     </Window>
+
+    {/* Fullscreen lightbox — portaled to body to escape stacking context */}
+    {typeof document !== "undefined" && ReactDOM.createPortal(
+      <AnimatePresence>
+        {isFullscreen && lightboxOpen && lightboxPhoto && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsFullscreen(false)}
+            sx={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              bg: "rgba(0,0,0,0.92)",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              p: 4,
+              zIndex: 9999,
+              cursor: "pointer",
+            }}
+          >
+            {/* Counter */}
+            {lightboxPhotos.length > 1 && (
+              <div
+                sx={{ position: "absolute", top: "20px", left: "50%", transform: "translateX(-50%)", color: "white", fontSize: 1, opacity: 0.6, zIndex: 2 }}
+                onClick={(e: React.MouseEvent) => e.stopPropagation()}
+              >
+                {lightboxIndex + 1} / {lightboxPhotos.length}
+              </div>
+            )}
+
+            {/* Prev arrow */}
+            {lightboxPhotos.length > 1 && (
+              <button
+                onClick={(e: React.MouseEvent) => { e.stopPropagation(); lightboxPrev(); }}
+                sx={{
+                  position: "absolute",
+                  left: "16px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  width: "40px",
+                  height: "40px",
+                  borderRadius: "50%",
+                  border: "none",
+                  bg: "rgba(255,255,255,0.15)",
+                  color: "white",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  zIndex: 2,
+                  transition: "background 0.15s ease",
+                  "&:hover": { bg: "rgba(255,255,255,0.3)" },
+                }}
+                aria-label="Previous photo"
+              >
+                <LightboxArrowLeft />
+              </button>
+            )}
+
+            {/* Next arrow */}
+            {lightboxPhotos.length > 1 && (
+              <button
+                onClick={(e: React.MouseEvent) => { e.stopPropagation(); lightboxNext(); }}
+                sx={{
+                  position: "absolute",
+                  right: "16px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  width: "40px",
+                  height: "40px",
+                  borderRadius: "50%",
+                  border: "none",
+                  bg: "rgba(255,255,255,0.15)",
+                  color: "white",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  zIndex: 2,
+                  transition: "background 0.15s ease",
+                  "&:hover": { bg: "rgba(255,255,255,0.3)" },
+                }}
+                aria-label="Next photo"
+              >
+                <LightboxArrowRight />
+              </button>
+            )}
+
+            <motion.img
+              key={lightboxPhoto.id}
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              src={lightboxPhoto.imageUrl}
+              alt={lightboxPhoto.title}
+              sx={{
+                maxWidth: "90vw",
+                maxHeight: "80vh",
+                objectFit: "contain",
+                borderRadius: "8px",
+                boxShadow: "0 8px 40px rgba(0,0,0,0.6)",
+              }}
+              onClick={(e: React.MouseEvent) => e.stopPropagation()}
+            />
+            <div
+              sx={{ mt: 3, textAlign: "center", color: "white" }}
+              onClick={(e: React.MouseEvent) => e.stopPropagation()}
+            >
+              <div sx={{ fontSize: 2, fontWeight: "bold" }}>{lightboxPhoto.title}</div>
+              {lightboxPhoto.description && (
+                <div sx={{ fontSize: 1, opacity: 0.7, mt: 1 }}>{lightboxPhoto.description}</div>
+              )}
+              {lightboxPhoto.location && (
+                <div sx={{ fontSize: 0, opacity: 0.5, mt: 1 }}>{lightboxPhoto.location}</div>
+              )}
+            </div>
+
+            {/* Close button */}
+            <button
+              onClick={(e: React.MouseEvent) => { e.stopPropagation(); setIsFullscreen(false); }}
+              sx={{
+                position: "absolute",
+                top: "16px",
+                right: "16px",
+                background: "rgba(255,255,255,0.15)",
+                border: "none",
+                color: "white",
+                width: "36px",
+                height: "36px",
+                borderRadius: "50%",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                zIndex: 2,
+                transition: "background 0.15s ease",
+                "&:hover": { background: "rgba(255,255,255,0.25)" },
+              }}
+              aria-label="Close fullscreen"
+            >
+              <LightboxCloseIcon />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>,
+      document.body
+    )}
+    </>
   );
 }
 
 Gallery.getLayout = (page: JSX.Element) => <Layout>{page}</Layout>;
+
+// --- Lightbox Icons ---
+
+const LightboxArrowLeft = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+  </svg>
+);
+
+const LightboxArrowRight = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
+  </svg>
+);
+
+const LightboxExpandIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 256 256" fill="currentColor">
+    <path d="M216,48V88a8,8,0,0,1-16,0V67.31l-42.34,42.35a8,8,0,0,1-11.32-11.32L188.69,56H168a8,8,0,0,1,0-16h40A8,8,0,0,1,216,48ZM98.34,146.34,56,188.69V168a8,8,0,0,0-16,0v40a8,8,0,0,0,8,8H88a8,8,0,0,0,0-16H67.31l42.35-42.34a8,8,0,0,0-11.32-11.32Z" />
+  </svg>
+);
+
+const LightboxCloseIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+  </svg>
+);
