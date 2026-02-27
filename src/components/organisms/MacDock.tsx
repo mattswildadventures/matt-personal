@@ -212,7 +212,7 @@ export default function MacDock({ welcomeActive, isMusicExpanded, isMusicPlaying
     right: "0",
     display: "flex",
     justifyContent: "center",
-    alignItems: "end",
+    alignItems: "center",
     pointerEvents: "none", // Allow clicks to pass through the container
     zIndex: zIndex.taskbar,
     
@@ -225,7 +225,7 @@ export default function MacDock({ welcomeActive, isMusicExpanded, isMusicPlaying
 
   const dockInnerStyle: ThemeUICSSObject = {
     display: "flex",
-    alignItems: "end",
+    alignItems: "center",
     gap: `${dockGapSize}px`,
     pointerEvents: "auto", // Re-enable pointer events for the actual dock
     padding: "8px",
