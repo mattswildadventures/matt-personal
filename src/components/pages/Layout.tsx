@@ -12,6 +12,7 @@ import { ThemeMode } from "../../themes";
 
 import Navigation from "../molecules/Navigation";
 import MusicPlayer from "../molecules/MusicPlayer";
+import PhotoGallery from "../molecules/PhotoGallery";
 import WelcomeScreen from "../molecules/WelcomeScreen";
 import Desktop from "../organisms/Desktop";
 import MacDock from "../organisms/MacDock";
@@ -48,6 +49,13 @@ export default function Layout({ children }: LayoutProps): JSX.Element {
 
   const closeMusicPlayer = useCallback(() => {
     setIsMusicExpanded(false);
+  }, []);
+
+  // Lifted gallery state for dock integration on mobile
+  const [isGalleryExpanded, setIsGalleryExpanded] = useState(false);
+
+  const toggleGalleryExpanded = useCallback(() => {
+    setIsGalleryExpanded((prev) => !prev);
   }, []);
 
   // Dismiss welcome when global setting syncs to false (e.g. localStorage on load).
@@ -134,6 +142,8 @@ export default function Layout({ children }: LayoutProps): JSX.Element {
         isMusicExpanded={isMusicExpanded}
         isMusicPlaying={isMusicPlaying}
         onToggleMusic={toggleMusicExpanded}
+        isGalleryExpanded={isGalleryExpanded}
+        onToggleGallery={toggleGalleryExpanded}
       />
       <MusicPlayer
         hidden={welcomeActive}
@@ -141,6 +151,12 @@ export default function Layout({ children }: LayoutProps): JSX.Element {
         isMobileExpanded={isMusicExpanded}
         onMobileExpandedChange={setIsMusicExpanded}
         onPlayingStateChange={setIsMusicPlaying}
+      />
+      <PhotoGallery
+        hidden={welcomeActive}
+        isHomePage={isHomePage}
+        isMobileExpanded={isGalleryExpanded}
+        onMobileExpandedChange={setIsGalleryExpanded}
       />
 
       {/* Welcome screen overlay */}

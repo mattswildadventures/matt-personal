@@ -28,9 +28,11 @@ type MacDockProps = {
   isMusicExpanded?: boolean;
   isMusicPlaying?: boolean;
   onToggleMusic?: () => void;
+  isGalleryExpanded?: boolean;
+  onToggleGallery?: () => void;
 };
 
-export default function MacDock({ welcomeActive, isMusicExpanded, isMusicPlaying, onToggleMusic }: MacDockProps) {
+export default function MacDock({ welcomeActive, isMusicExpanded, isMusicPlaying, onToggleMusic, isGalleryExpanded, onToggleGallery }: MacDockProps) {
   const router = useRouter();
   const { hideTaskbar, showExtendedDockDesktop, showExtendedDockMobile, dockMagnification } = useContext(GlobalContext);
   const [isConfigActive, setIsConfigActive] = useState(false);
@@ -141,8 +143,9 @@ export default function MacDock({ welcomeActive, isMusicExpanded, isMusicPlaying
     }
     
     const musicCount = 1; // Music icon on mobile
+    const galleryCount = 1; // Gallery icon on mobile
     const settingsCount = 1;
-    const totalIcons = coreNavigationCount + extendedNavigationCount + socialCount + musicCount + settingsCount;
+    const totalIcons = coreNavigationCount + extendedNavigationCount + socialCount + musicCount + galleryCount + settingsCount;
 
     // Available width calculation - account for iPhone safe area
     const taskbarPadding = 20; // Reduced padding for better fit
@@ -556,6 +559,15 @@ export default function MacDock({ welcomeActive, isMusicExpanded, isMusicPlaying
     </div>
   );
 
+  // Gallery icon for mobile dock
+  const GalleryDockIcon = () => (
+    <div sx={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <svg width="24" height="24" viewBox="0 0 256 256" fill="currentColor" sx={{ opacity: 0.8 }}>
+        <path d="M216,40H72A16,16,0,0,0,56,56V72H40A16,16,0,0,0,24,88V200a16,16,0,0,0,16,16H184a16,16,0,0,0,16-16V184h16a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40ZM184,200H40V88H184Zm32-32H200V88a16,16,0,0,0-16-16H72V56H216ZM160,116a12,12,0,1,1-12-12A12,12,0,0,1,160,116Zm-16,52H56a8,8,0,0,1-6.65-12.44l24-36a8,8,0,0,1,13.3,0L98.42,137.1l18.24-27.37a8,8,0,0,1,13.34.34l24,40A8,8,0,0,1,147.15,160Z" />
+      </svg>
+    </div>
+  );
+
   // Dock icons configuration (env-controlled social display)
   const dockIcons = [
     ...navigationIcons,
@@ -594,6 +606,17 @@ export default function MacDock({ welcomeActive, isMusicExpanded, isMusicPlaying
       onClick: onToggleMusic,
       href: undefined,
       isActive: !!isMusicExpanded,
+      isNavigationIcon: false,
+    }] : []),
+
+    // Gallery icon (mobile only)
+    ...(isMobile && onToggleGallery ? [{
+      iconName: undefined,
+      customIcon: <GalleryDockIcon />,
+      label: "Gallery",
+      onClick: onToggleGallery,
+      href: undefined,
+      isActive: !!isGalleryExpanded,
       isNavigationIcon: false,
     }] : []),
 

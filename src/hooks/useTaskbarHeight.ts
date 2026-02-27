@@ -27,8 +27,9 @@ export default function useTaskbarHeight() {
     const extendedNavigationCount = getShowExtendedDock() ? 6 : 0; // Extended navigation icons based on platform
     const socialCount = 1; // Share icon on mobile
     const musicCount = 1; // Music icon on mobile
+    const galleryCount = 1; // Gallery icon on mobile
     const settingsCount = 1;
-    const totalIcons = coreNavigationCount + extendedNavigationCount + socialCount + musicCount + settingsCount;
+    const totalIcons = coreNavigationCount + extendedNavigationCount + socialCount + musicCount + galleryCount + settingsCount;
 
     // Available width calculation - account for iPhone safe area
     const taskbarPadding = 20; // Reduced padding for better fit
